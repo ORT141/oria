@@ -203,8 +203,17 @@ export function renderQuests() {
     let activeQuestsCount = 0;
 
     OriaState.quests.forEach((quest, index) => {
-        const completedTasks = quest.sub_tasks.filter(t => t.completed).length;
-        const totalTasks = quest.sub_tasks.length;
+        let completedTasks = 0;
+        let totalTasks = 0;
+        quest.sub_tasks.forEach(t => {
+            if (t.micro_steps && t.micro_steps.length > 0) {
+                totalTasks += t.micro_steps.length;
+                completedTasks += t.micro_steps.filter(m => m.completed).length;
+            } else {
+                totalTasks += 1;
+                if (t.completed) completedTasks += 1;
+            }
+        });
         const progress = Math.round((completedTasks / totalTasks) * 100) || 0;
 
         if (progress >= 100) return;
@@ -354,124 +363,548 @@ export function openQuestModal(index) {
     document.getElementById('questModalTitle').textContent = quest.title;
     document.getElementById('questModalDifficulty').textContent = quest.difficulty;
 
-    const completedTasks = quest.sub_tasks.filter(t => t.completed).length;
-    const totalTasks = quest.sub_tasks.length;
+    let completedTasks = 0;
+    let totalTasks = 0;
+    quest.sub_tasks.forEach(t => {
+        if (t.micro_steps && t.micro_steps.length > 0) {
+            totalTasks += t.micro_steps.length;
+            completedTasks += t.micro_steps.filter(m => m.completed).length;
+        } else {
+            totalTasks += 1;
+            if (t.completed) completedTasks += 1;
+        }
+    });
     const progress = Math.round((completedTasks / totalTasks) * 100) || 0;
 
     document.getElementById('questProgressText').textContent = `${progress}% Completed`;
     document.getElementById('questModalProgress').style.width = `${progress}%`;
 
     const list = document.getElementById('questChainList');
+    list.className = 'quest-chain-container position-relative ps-3';
+    if (list.previousElementSibling) list.previousElementSibling.style.display = 'block';
+
     list.innerHTML = '';
 
     quest.sub_tasks.forEach((task, tIndex) => {
         const item = document.createElement('div');
         item.className = `quest-chain-item ${task.completed ? 'completed' : ''}`;
 
-        let descHtml = task.task_description ? `<p class="text-muted small mb-3 px-2 border-start border-primary border-3 ms-1">${task.task_description}</p>` : '';
-        let quizHtml = descHtml;
-
-        if (task.quiz_data) {
-            if (task.quiz_score !== undefined) {
-                quizHtml += `<div class="quiz-container shadow-sm border-success">
-                    <h6 class="text-success fw-bold text-center mb-3">Quiz Completed! Score: ${task.quiz_score}%</h6>
-                    ${task.quiz_data.map((q, qIdx) => {
-                    const userAnsIdx = task.user_answers[qIdx];
-                    const isCorrect = userAnsIdx === q.correct_option_index;
-                    return `
-                        <div class="mb-4">
-                            <div class="quiz-question-title">${qIdx + 1}. ${q.question}</div>
-                            <div class="quiz-options-list">
-                                ${q.options.map((opt, oIdx) => `
-                                    <input type="radio" id="q-${index}-${tIndex}-${qIdx}-o-${oIdx}-done" ${oIdx === userAnsIdx ? 'checked' : ''} disabled class="quiz-option-input d-none">
-                                    <label for="q-${index}-${tIndex}-${qIdx}-o-${oIdx}-done" class="quiz-option-label ${oIdx === q.correct_option_index ? 'correct-answer' : (oIdx === userAnsIdx ? 'wrong-answer' : '')}" style="opacity: 0.8; cursor: default;">
-                                        ${opt}
-                                    </label>
-                                `).join('')}
-                            </div>
-                            ${!isCorrect ? `<button class="btn btn-sm btn-outline-primary mt-2 rounded-pill px-3 fw-bold btn-explain" data-qindex="${index}" data-tindex="${tIndex}" data-questionidx="${qIdx}">Explain Why</button>` : ''}
-                            <div class="ai-explanation-box" id="explain-box-${index}-${tIndex}-${qIdx}"></div>
-                        </div>
-                        `;
-                }).join('')}
-                    <div class="text-center mt-3 border-top pt-3">
-                        <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-4 btn-new-test" data-qindex="${index}" data-tindex="${tIndex}">Generate New Test</button>
-                    </div>
-                </div>`;
-            } else {
-                quizHtml += `<div class="quiz-container shadow-sm">
-                    <h6 class="fw-bold mb-3 text-primary text-center">AI generated Mini-Test</h6>
-                    <div id="quiz-form-${index}-${tIndex}">
-                        ${task.quiz_data.map((q, qIdx) => `
-                        <div class="mb-4 quiz-question" data-correct="${q.correct_option_index}">
-                            <div class="quiz-question-title">${qIdx + 1}. ${q.question}</div>
-                            <div class="quiz-options-list">
-                                ${q.options.map((opt, oIdx) => `
-                                    <input type="radio" name="q-${index}-${tIndex}-${qIdx}" id="q-${index}-${tIndex}-${qIdx}-o-${oIdx}" value="${oIdx}" class="quiz-option-input d-none">
-                                    <label for="q-${index}-${tIndex}-${qIdx}-o-${oIdx}" class="quiz-option-label">
-                                        ${opt}
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                        `).join('')}
-                        <button class="btn btn-primary w-100 rounded-pill fw-bold mt-2 btn-submit-test" data-qindex="${index}" data-tindex="${tIndex}">Submit Test</button>
-                    </div>
-                </div>`;
-            }
-        } else if (!task.completed) {
-            quizHtml += `
-                <div class="text-center mt-3 pt-3 border-top">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold btn-generate-quiz" data-qindex="${index}" data-tindex="${tIndex}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        Generate Mini-Test
-                    </button>
-                </div>
-            `;
-        }
+        let mTotal = task.micro_steps ? task.micro_steps.length : 1;
+        let mDone = task.micro_steps ? task.micro_steps.filter(m => m.completed).length : (task.completed ? 1 : 0);
 
         item.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center" style="cursor: pointer;" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="d-flex justify-content-between align-items-center w-100" style="cursor: pointer;">
                 <div>
                     <h6 class="fw-bold mb-1 ${task.completed ? 'text-decoration-line-through text-muted' : 'text-dark'}">${task.task}</h6>
-                    <small class="text-muted fw-bold" style="color: var(--accent-pink) !important;">+${task.xp_reward || 50} XP • Tap to expand</small>
+                    <small class="text-muted fw-bold" style="color: var(--accent-pink) !important;">${mDone}/${mTotal} Steps Done • +${task.xp_reward || 50} XP on finish</small>
                 </div>
-                ${!task.completed ? `<button class="btn btn-sm text-white rounded-pill px-3 btn-complete-task fw-bold shadow-sm" style="background: var(--primary-gradient);" data-qindex="${index}" data-tindex="${tIndex}" onclick="event.stopPropagation();">Complete</button>` : '<span class="text-success fw-bold">✓ Done</span>'}
-            </div>
-            <div class="quest-accordion-body" onclick="event.stopPropagation();">
-                ${quizHtml}
+                <div class="d-flex align-items-center gap-2">
+                    ${task.completed ? '<span class="text-success fw-bold">✓ Done</span>' : ''}
+                    <button class="btn btn-sm btn-outline-info rounded-pill px-3">Open Module ➔</button>
+                </div>
             </div>
         `;
+
+        item.addEventListener('click', () => {
+            openModuleView(index, tIndex);
+        });
+
         list.appendChild(item);
     });
 
-    list.querySelectorAll('.btn-complete-task').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const qIdx = parseInt(e.target.getAttribute('data-qindex'));
-            const tIdx = parseInt(e.target.getAttribute('data-tindex'));
-            completeTask(qIdx, tIdx);
-            openQuestModal(qIdx);
-        });
+    const modalEl = document.getElementById('questChainModal');
+    if (window.bootstrap) {
+        let modal = window.bootstrap.Modal.getInstance(modalEl);
+        if (!modal) {
+            modal = new window.bootstrap.Modal(modalEl);
+        }
+        modal.show();
+    }
+}
+
+function openModuleView(qIndex, tIndex) {
+    const quest = OriaState.quests[qIndex];
+    const task = quest.sub_tasks[tIndex];
+
+    document.getElementById('questModalTitle').textContent = quest.title + ' > ' + task.task;
+
+    const list = document.getElementById('questChainList');
+    list.className = '';
+    if (list.previousElementSibling) list.previousElementSibling.style.display = 'none';
+
+    list.innerHTML = `
+        <div>
+            <button class="btn btn-sm btn-secondary mb-3 rounded-pill fw-bold shadow-sm px-3 border-0" style="background: rgba(0,0,0,0.05); color: var(--text-main);" id="btnBackToModules">
+                ← Back to Modules
+            </button>
+            <h4 class="mb-2 text-info fw-bold">${task.task}</h4>
+            ${task.task_description ? `<p class="text-muted small mb-4">${task.task_description}</p>` : '<div class="mb-4"></div>'}
+            <div id="moduleStepsContainer" class="micro-steps-container"></div>
+        </div>
+    `;
+
+    document.getElementById('btnBackToModules').addEventListener('click', () => {
+        openQuestModal(qIndex);
     });
 
-    list.querySelectorAll('.btn-generate-quiz').forEach(btn => {
+    const stepsContainer = document.getElementById('moduleStepsContainer');
+
+    if (task.micro_steps && task.micro_steps.length > 0) {
+        task.micro_steps.forEach((mStep, mIdx) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = `p-3 mb-3 glass-card shadow-sm position-relative ${mStep.completed ? 'opacity-75' : ''}`;
+            stepDiv.style.borderRadius = '12px';
+            stepDiv.style.border = '1px solid rgba(0,0,0,0.05)';
+            stepDiv.style.background = mStep.completed ? 'rgba(0,0,0,0.02)' : 'var(--card-bg)';
+
+            const isChecked = mStep.completed ? 'checked disabled' : '';
+
+            // Header: Checkbox + Title (Clickable body-toggle logic will be bound to header)
+            const headerHtml = `
+                <div class="d-flex align-items-start justify-content-between step-header" style="cursor: pointer;">
+                    <div class="d-flex align-items-start flex-grow-1 pe-2">
+                        <input class="form-check-input micro-step-checkbox me-3 shadow-sm border-2" type="checkbox" id="mStep_${qIndex}_${tIndex}_${mIdx}" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}" style="width: 1.4em; height: 1.4em; cursor: ${mStep.completed ? 'default' : 'pointer'}; flex-shrink: 0; margin-top: 0.15rem;" ${isChecked} onclick="event.stopPropagation();">
+                        <div class="flex-grow-1">
+                            <label class="form-check-label w-100 ${mStep.completed ? 'text-decoration-line-through text-muted' : 'fw-bold text-dark'}" style="cursor: pointer; font-size: 1.05rem; user-select: none;">
+                                ${mStep.task}
+                            </label>
+                            ${mStep.completed ? '' : '<span class="badge rounded-pill mt-1 badge-xp shadow-sm" style="background: var(--accent-blue); opacity: 0.85;">+10 XP</span>'}
+                        </div>
+                    </div>
+                    ${mStep.completed
+                    ? '<span class="text-success fw-bold flex-shrink-0 mt-1" style="font-size: 0.9rem;">✓</span>'
+                    : `<button class="btn btn-sm text-white rounded-pill px-3 py-1 shadow-sm flex-shrink-0 mt-1 micro-btn-complete" style="background: var(--primary-gradient); font-size: 0.75rem; font-weight: bold;" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}" onclick="event.stopPropagation();">Complete</button>`
+                }
+                </div>
+            `;
+
+            // Body: Description (Hidden by default)
+            let bodyHtml = '';
+            if (mStep.task_description || mStep.quiz_data) {
+                bodyHtml = `
+                    <div class="step-body mt-3 pt-2 border-top border-opacity-25" style="display: none;">
+                        ${mStep.task_description ? `<p class="text-muted small mb-0 ${mStep.completed ? 'text-decoration-line-through' : ''}">${mStep.task_description}</p>` : ''}
+                        
+                        ${/* Micro-step specific quiz rendering space */ ''}
+                        <div class="micro-quiz-container mt-3" id="micro-quiz-${qIndex}-${tIndex}-${mIdx}">
+                `;
+
+                if (mStep.quiz_data) {
+                    if (mStep.quiz_score !== undefined) {
+                        bodyHtml += `
+                            <div class="glass-card p-3 shadow-sm border-success">
+                                <h6 class="text-success fw-bold text-center mb-3" style="font-size: 0.9rem;">Quiz Completed! Score: ${mStep.quiz_score}%</h6>
+                                ${mStep.quiz_data.map((q, qIdx) => {
+                            const userAnsIdx = mStep.user_answers[qIdx];
+                            const isCorrect = userAnsIdx === q.correct_option_index;
+                            return `
+                                        <div class="mb-3">
+                                            <div class="fw-bold text-dark mb-1" style="font-size: 0.85rem;">${qIdx + 1}. ${q.question}</div>
+                                            <div class="ps-2 border-start border-2 border-primary border-opacity-25">
+                                                ${q.options.map((opt, oIdx) => `
+                                                    <div class="form-check mb-1">
+                                                        <input type="radio" id="mq-${qIndex}-${tIndex}-${mIdx}-${qIdx}-o-${oIdx}-done" ${oIdx === userAnsIdx ? 'checked' : ''} disabled class="d-none">
+                                                        <label class="fw-semibold ${oIdx === q.correct_option_index ? 'text-success' : (oIdx === userAnsIdx ? 'text-danger' : 'text-muted')}" style="opacity: 0.9; font-size: 0.8rem;">
+                                                            ${oIdx === q.correct_option_index ? '✓' : (oIdx === userAnsIdx ? '✗' : '·')} ${opt}
+                                                        </label>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                            ${!isCorrect ? `<button class="btn btn-sm btn-outline-primary mt-1 rounded-pill px-2 py-0 fw-bold micro-btn-explain" style="font-size: 0.75rem;" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}" data-questionidx="${qIdx}">Explain Why</button>` : ''}
+                                            <div class="mt-2 p-2 bg-light rounded border micro-explain-box" id="micro-explain-box-${qIndex}-${tIndex}-${mIdx}-${qIdx}" style="display: none; font-size: 0.8rem;"></div>
+                                        </div>
+                                    `;
+                        }).join('')}
+                                <div class="text-center mt-2 border-top pt-2">
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3 py-1 micro-btn-new-test" style="font-size: 0.8rem;" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}">Generate New Test</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        bodyHtml += `
+                            <div class="p-3 glass-card shadow-sm border border-primary border-opacity-25">
+                                <h6 class="fw-bold mb-2 text-primary text-center" style="font-size: 0.85rem;">AI generated Mini-Test</h6>
+                                <div id="micro-quiz-form-${qIndex}-${tIndex}-${mIdx}">
+                                    ${mStep.quiz_data.map((q, qIdx) => `
+                                        <div class="mb-3 micro-quiz-question" data-correct="${q.correct_option_index}">
+                                            <div class="fw-bold text-dark mb-1" style="font-size: 0.85rem;">${qIdx + 1}. ${q.question}</div>
+                                            <div class="d-flex flex-column gap-1">
+                                                ${q.options.map((opt, oIdx) => `
+                                                    <input type="radio" name="mq-${qIndex}-${tIndex}-${mIdx}-${qIdx}" id="mq-${qIndex}-${tIndex}-${mIdx}-${qIdx}-o-${oIdx}" value="${oIdx}" class="micro-quiz-option-input d-none">
+                                                    <label for="mq-${qIndex}-${tIndex}-${mIdx}-${qIdx}-o-${oIdx}" class="p-2 border rounded bg-white text-dark shadow-sm" style="cursor: pointer; font-size: 0.8rem;">
+                                                        ${opt}
+                                                    </label>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold mt-2 shadow micro-btn-submit-test" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}">Submit Test</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (!mStep.completed) {
+                    bodyHtml += `
+                        <div class="mt-2 text-end">
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold micro-btn-generate-quiz" style="font-size: 0.8rem;" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}">
+                                Generate Mini-Test
+                            </button>
+                        </div>
+                    `;
+                }
+
+                bodyHtml += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            stepDiv.innerHTML = headerHtml + bodyHtml;
+
+            // Expand/Collapse Logic: clicking header toggles body visibility
+            const headerEl = stepDiv.querySelector('.step-header');
+            const bodyEl = stepDiv.querySelector('.step-body');
+            if (bodyEl) {
+                headerEl.addEventListener('click', (e) => {
+                    // CRITICAL FIX: Do nothing if the user specifically clicked the checkbox
+                    if (e.target.tagName.toLowerCase() === 'input' && e.target.type === 'checkbox') {
+                        return;
+                    }
+                    if (e.target.classList.contains('micro-step-checkbox')) return; // Fallback
+
+                    if (bodyEl.style.display === 'none') {
+                        bodyEl.style.display = 'block';
+                    } else {
+                        bodyEl.style.display = 'none';
+                    }
+                });
+            }
+
+            stepsContainer.appendChild(stepDiv);
+        });
+    } else {
+        stepsContainer.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center p-3 glass-card rounded-3 mb-3 border border-primary border-opacity-25">
+                <span class="fw-bold text-dark">Full Module Completion</span>
+                ${!task.completed ? `<button class="btn btn-sm text-white rounded-pill px-3 py-1 btn-complete-task fw-bold shadow-sm" style="background: var(--primary-gradient);" data-qindex="${qIndex}" data-tindex="${tIndex}">Complete (+${task.xp_reward || 50} XP)</button>` : '<span class="text-success fw-bold">✓ Done</span>'}
+            </div>
+        `;
+    }
+
+    // append quiz directly to the list container logic (it originally appended to list)
+    // we'll append to list outside the main div if needed, or inside the wrapper
+    const wrapper = list.firstElementChild;
+
+
+    let quizHtml = '';
+    if (task.quiz_data) {
+        if (task.quiz_score !== undefined) {
+            quizHtml += `<div class="quiz-container glass-card p-3 shadow-sm border-success mt-4">
+                <h6 class="text-success fw-bold text-center mb-3">Quiz Completed! Score: ${task.quiz_score}%</h6>
+                ${task.quiz_data.map((q, qIdx) => {
+                const userAnsIdx = task.user_answers[qIdx];
+                const isCorrect = userAnsIdx === q.correct_option_index;
+                return `
+                    <div class="mb-4">
+                        <div class="quiz-question-title fw-bold text-dark mb-2">${qIdx + 1}. ${q.question}</div>
+                        <div class="quiz-options-list ps-3 border-start border-2 border-primary border-opacity-25">
+                            ${q.options.map((opt, oIdx) => `
+                                <div class="form-check mb-1">
+                                    <input type="radio" id="q-${qIndex}-${tIndex}-${qIdx}-o-${oIdx}-done" ${oIdx === userAnsIdx ? 'checked' : ''} disabled class="quiz-option-input d-none">
+                                    <label for="q-${qIndex}-${tIndex}-${qIdx}-o-${oIdx}-done" class="quiz-option-label fw-semibold small ${oIdx === q.correct_option_index ? 'correct-answer text-success' : (oIdx === userAnsIdx ? 'wrong-answer text-danger' : 'text-muted')}" style="opacity: 0.9; cursor: default;">
+                                        ${oIdx === q.correct_option_index ? '✓' : (oIdx === userAnsIdx ? '✗' : '·')} ${opt}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${!isCorrect ? `<button class="btn btn-sm btn-outline-primary mt-2 rounded-pill px-3 fw-bold btn-explain" data-qindex="${qIndex}" data-tindex="${tIndex}" data-questionidx="${qIdx}">Explain Why</button>` : ''}
+                        <div class="ai-explanation-box mt-2 p-2 bg-light rounded small border" id="explain-box-${qIndex}-${tIndex}-${qIdx}" style="display: none;"></div>
+                    </div>
+                    `;
+            }).join('')}
+                <div class="text-center mt-3 border-top pt-3">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-4 btn-new-test" data-qindex="${qIndex}" data-tindex="${tIndex}">Generate New Test</button>
+                </div>
+            </div>`;
+        } else {
+            quizHtml += `<div class="quiz-container p-3 glass-card shadow-sm mt-4 border border-primary border-opacity-25">
+                <h6 class="fw-bold mb-3 text-primary text-center">AI generated Mini-Test</h6>
+                <div id="quiz-form-${qIndex}-${tIndex}">
+                    ${task.quiz_data.map((q, qIdx) => `
+                    <div class="mb-4 quiz-question" data-correct="${q.correct_option_index}">
+                        <div class="quiz-question-title fw-bold text-dark mb-2">${qIdx + 1}. ${q.question}</div>
+                        <div class="quiz-options-list d-flex flex-column gap-2">
+                            ${q.options.map((opt, oIdx) => `
+                                <input type="radio" name="q-${qIndex}-${tIndex}-${qIdx}" id="q-${qIndex}-${tIndex}-${qIdx}-o-${oIdx}" value="${oIdx}" class="quiz-option-input d-none">
+                                <label for="q-${qIndex}-${tIndex}-${qIdx}-o-${oIdx}" class="quiz-option-label p-2 border rounded-3 bg-white text-dark shadow-sm" style="cursor: pointer; font-size: 0.9rem;">
+                                    ${opt}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                    `).join('')}
+                    <button class="btn btn-primary w-100 rounded-pill fw-bold mt-3 shadow btn-submit-test" data-qindex="${qIndex}" data-tindex="${tIndex}">Submit Test</button>
+                </div>
+            </div>`;
+        }
+    } else if (task.completed) {
+        quizHtml += `
+            <div class="text-center mt-4 pt-3 border-top border-opacity-50">
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm btn-generate-quiz" data-qindex="${qIndex}" data-tindex="${tIndex}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1 mb-1"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Generate Mini-Test to Prove Module Mastery
+                </button>
+            </div>
+        `;
+    }
+
+    if (quizHtml) {
+        const quizContainer = document.createElement('div');
+        quizContainer.innerHTML = quizHtml;
+        wrapper.appendChild(quizContainer);
+    }
+
+    list.querySelectorAll('.micro-btn-generate-quiz').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.currentTarget;
-            const qIdx = parseInt(target.getAttribute('data-qindex'));
-            const tIdx = parseInt(target.getAttribute('data-tindex'));
+            const mIdx = parseInt(target.getAttribute('data-mindex'));
 
             const originalText = target.innerHTML;
             target.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
             target.disabled = true;
 
-            const subTask = OriaState.quests[qIdx].sub_tasks[tIdx];
+            const mStep = task.micro_steps[mIdx];
 
-            generateQuizAPI(subTask.task)
+            generateQuizAPI(mStep.task)
                 .then(data => {
                     if (data.quiz && data.quiz.length > 0) {
-                        OriaState.quests[qIdx].sub_tasks[tIdx].quiz_data = data.quiz;
+                        mStep.quiz_data = data.quiz;
                         saveStateAPI();
-                        openQuestModal(qIdx);
+                        openModuleView(qIndex, tIndex);
+                    } else {
+                        alert('Error generating test.');
+                        target.innerHTML = originalText;
+                        target.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    alert('Connection error.');
+                    target.innerHTML = originalText;
+                    target.disabled = false;
+                });
+        });
+    });
+
+    list.querySelectorAll('.micro-step-checkbox').forEach(chk => {
+        chk.addEventListener('change', async (e) => {
+            e.stopPropagation(); // Prevent this click from expanding/collapsing the body
+
+            const mIdx = parseInt(e.target.getAttribute('data-mindex'));
+            const m = task.micro_steps[mIdx];
+
+            if (m.completed) return;
+            m.completed = true;
+            e.target.disabled = true;
+
+            const parentDiv = e.target.closest('.glass-card');
+            parentDiv.classList.add('opacity-75');
+            parentDiv.style.background = 'rgba(0,0,0,0.02)';
+
+            const label = e.target.nextElementSibling.querySelector('label');
+            if (label) {
+                label.classList.remove('fw-bold', 'text-dark');
+                label.classList.add('text-decoration-line-through', 'text-muted');
+                label.style.cursor = 'default';
+            }
+
+            const bodyEl = parentDiv.querySelector('.step-body');
+            if (bodyEl && bodyEl.querySelector('p')) {
+                bodyEl.querySelector('p').classList.add('text-decoration-line-through');
+            }
+
+            const badge = e.target.nextElementSibling.querySelector('.badge-xp');
+            if (badge) badge.style.display = 'none';
+
+            await addXP(10);
+
+            if (task.micro_steps.every(step => step.completed) && !task.completed) {
+                task.completed = true;
+                if (task.xp_reward) {
+                    await addXP(task.xp_reward);
+                }
+            }
+
+            await checkQuestCompletion(qIndex);
+
+            // Recalculate Quest Progress
+            const overarchingQuest = OriaState.quests[qIndex];
+            if (overarchingQuest && overarchingQuest.sub_tasks) {
+                let completedTaskCount = 0;
+                let totalTaskCount = 0;
+                overarchingQuest.sub_tasks.forEach(t => {
+                    if (t.micro_steps && t.micro_steps.length > 0) {
+                        totalTaskCount += t.micro_steps.length;
+                        completedTaskCount += t.micro_steps.filter(ms => ms.completed).length;
+                    } else {
+                        totalTaskCount += 1;
+                        if (t.completed) completedTaskCount += 1;
+                    }
+                });
+                const progressPercentage = Math.round((completedTaskCount / totalTaskCount) * 100) || 0;
+                const progressTextEl = document.getElementById('questProgressText');
+                if (progressTextEl) progressTextEl.textContent = `${progressPercentage}% Completed`;
+                const progressBarEl = document.getElementById('questModalProgress');
+                if (progressBarEl) progressBarEl.style.width = `${progressPercentage}%`;
+            }
+
+            try {
+                await saveStateAPI();
+                openModuleView(qIndex, tIndex);
+                renderQuests();
+            } catch (err) {
+                console.error('Failed to save micro-step completion', err);
+            }
+        });
+
+        // Ensure standard clicks on the checkbox ALSO stop bubbling just to be safe
+        chk.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+
+    list.querySelectorAll('.micro-btn-complete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const btnEl = e.currentTarget;
+            btnEl.disabled = true;
+            btnEl.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            const mIdx = parseInt(btnEl.getAttribute('data-mindex'));
+            const chk = document.getElementById(`mStep_${qIndex}_${tIndex}_${mIdx}`);
+            if (chk && !chk.checked) {
+                chk.checked = true;
+                chk.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    list.querySelectorAll('.micro-btn-submit-test').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const mIdx = parseInt(e.target.getAttribute('data-mindex'));
+            const mStep = task.micro_steps[mIdx];
+
+            const container = document.getElementById(`micro-quiz-form-${qIndex}-${tIndex}-${mIdx}`);
+            const questions = container.querySelectorAll('.micro-quiz-question');
+
+            let correctCount = 0;
+            let userAnswers = [];
+            let allAnswered = true;
+
+            questions.forEach((qDiv, idx) => {
+                const selected = qDiv.querySelector(`input[name="mq-${qIndex}-${tIndex}-${mIdx}-${idx}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                } else {
+                    const selVal = parseInt(selected.value);
+                    const correctVal = parseInt(qDiv.getAttribute('data-correct'));
+                    userAnswers.push(selVal);
+                    if (selVal === correctVal) correctCount++;
+                }
+            });
+
+            if (!allAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+
+            const percentage = Math.round((correctCount / questions.length) * 100);
+            mStep.quiz_score = percentage;
+            mStep.user_answers = userAnswers;
+
+            saveStateAPI();
+            openModuleView(qIndex, tIndex);
+        });
+    });
+
+    list.querySelectorAll('.micro-quiz-option-input:not([disabled])').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const groupName = e.target.name;
+            document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
+                const lbl = document.querySelector(`label[for="${r.id}"]`);
+                if (r.checked) {
+                    lbl.classList.remove('bg-white', 'text-dark');
+                    lbl.classList.add('bg-primary', 'text-white', 'border-primary');
+                } else {
+                    lbl.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    lbl.classList.add('bg-white', 'text-dark');
+                }
+            });
+        });
+    });
+
+    list.querySelectorAll('.micro-btn-new-test').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const mIdx = parseInt(e.target.getAttribute('data-mindex'));
+            const mStep = task.micro_steps[mIdx];
+
+            delete mStep.quiz_data;
+            delete mStep.quiz_score;
+            delete mStep.user_answers;
+
+            saveStateAPI();
+            openModuleView(qIndex, tIndex);
+        });
+    });
+
+    list.querySelectorAll('.micro-btn-explain').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            const mIdx = parseInt(target.getAttribute('data-mindex'));
+            const questionIdx = parseInt(target.getAttribute('data-questionidx'));
+
+            const mStep = task.micro_steps[mIdx];
+            const qData = mStep.quiz_data[questionIdx];
+            const userAnswerText = qData.options[mStep.user_answers[questionIdx]];
+            const correctAnswerText = qData.options[qData.correct_option_index];
+
+            const explainBox = document.getElementById(`micro-explain-box-${qIndex}-${tIndex}-${mIdx}-${questionIdx}`);
+
+            target.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            target.disabled = true;
+
+            explainQuizAPI(qData.question, userAnswerText, correctAnswerText)
+                .then(data => {
+                    target.style.display = 'none';
+                    explainBox.innerHTML = `<strong>ORIA:</strong> ${data.explanation}`;
+                    explainBox.style.display = 'block';
+                })
+                .catch(err => {
+                    alert('Error loading explanation.');
+                    target.innerHTML = 'Explain Why';
+                    target.disabled = false;
+                });
+        });
+    });
+
+    if (list.querySelector('.btn-complete-task')) {
+        list.querySelector('.btn-complete-task').addEventListener('click', (e) => {
+            completeTask(qIndex, tIndex);
+            openModuleView(qIndex, tIndex);
+        });
+    }
+
+    list.querySelectorAll('.btn-generate-quiz').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            const originalText = target.innerHTML;
+            target.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            target.disabled = true;
+
+            generateQuizAPI(task.task)
+                .then(data => {
+                    if (data.quiz && data.quiz.length > 0) {
+                        task.quiz_data = data.quiz;
+                        saveStateAPI();
+                        openModuleView(qIndex, tIndex);
                     } else {
                         alert('Error generating quiz.');
                         target.innerHTML = originalText;
@@ -488,11 +921,7 @@ export function openQuestModal(index) {
 
     list.querySelectorAll('.btn-submit-test').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const qIdx = parseInt(e.target.getAttribute('data-qindex'));
-            const tIdx = parseInt(e.target.getAttribute('data-tindex'));
-            const task = OriaState.quests[qIdx].sub_tasks[tIdx];
-
-            const container = document.getElementById(`quiz-form-${qIdx}-${tIdx}`);
+            const container = document.getElementById(`quiz-form-${qIndex}-${tIndex}`);
             const questions = container.querySelectorAll('.quiz-question');
 
             let correctCount = 0;
@@ -500,7 +929,7 @@ export function openQuestModal(index) {
             let allAnswered = true;
 
             questions.forEach((qDiv, idx) => {
-                const selected = qDiv.querySelector(`input[name="q-${qIdx}-${tIdx}-${idx}"]:checked`);
+                const selected = qDiv.querySelector(`input[name="q-${qIndex}-${tIndex}-${idx}"]:checked`);
                 if (!selected) {
                     allAnswered = false;
                 } else {
@@ -521,38 +950,45 @@ export function openQuestModal(index) {
             task.user_answers = userAnswers;
 
             saveStateAPI();
-            openQuestModal(qIdx);
+            openModuleView(qIndex, tIndex);
+        });
+    });
+
+    list.querySelectorAll('.quiz-option-input:not([disabled])').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const groupName = e.target.name;
+            document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
+                const lbl = document.querySelector(`label[for="${r.id}"]`);
+                if (r.checked) {
+                    lbl.classList.remove('bg-white', 'text-dark');
+                    lbl.classList.add('bg-primary', 'text-white', 'border-primary');
+                } else {
+                    lbl.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    lbl.classList.add('bg-white', 'text-dark');
+                }
+            });
         });
     });
 
     list.querySelectorAll('.btn-new-test').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const qIdx = parseInt(e.target.getAttribute('data-qindex'));
-            const tIdx = parseInt(e.target.getAttribute('data-tindex'));
-            const task = OriaState.quests[qIdx].sub_tasks[tIdx];
-
             delete task.quiz_data;
             delete task.quiz_score;
             delete task.user_answers;
-
             saveStateAPI();
-            openQuestModal(qIdx);
+            openModuleView(qIndex, tIndex);
         });
     });
 
     list.querySelectorAll('.btn-explain').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.currentTarget;
-            const qIdx = parseInt(target.getAttribute('data-qindex'));
-            const tIdx = parseInt(target.getAttribute('data-tindex'));
             const questionIdx = parseInt(target.getAttribute('data-questionidx'));
-
-            const task = OriaState.quests[qIdx].sub_tasks[tIdx];
             const qData = task.quiz_data[questionIdx];
             const userAnswerText = qData.options[task.user_answers[questionIdx]];
             const correctAnswerText = qData.options[qData.correct_option_index];
 
-            const explainBox = document.getElementById(`explain-box-${qIdx}-${tIdx}-${questionIdx}`);
+            const explainBox = document.getElementById(`explain-box-${qIndex}-${tIndex}-${questionIdx}`);
 
             target.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
             target.disabled = true;
@@ -561,15 +997,15 @@ export function openQuestModal(index) {
                 .then(data => {
                     target.style.display = 'none';
                     explainBox.innerHTML = `<strong>ORIA:</strong> ${data.explanation}`;
-                    explainBox.classList.add('show');
+                    explainBox.style.display = 'block';
                 })
                 .catch(err => {
+                    alert('Error loading explanation.');
                     target.innerHTML = 'Explain Why';
                     target.disabled = false;
                 });
         });
     });
-
     const modalEl = document.getElementById('questChainModal');
     if (window.bootstrap) {
         let modal = window.bootstrap.Modal.getInstance(modalEl);
@@ -582,12 +1018,56 @@ export function openQuestModal(index) {
     }
 }
 
-export function completeTask(qIndex, tIndex) {
+export async function checkQuestCompletion(qIndex) {
+    const quest = OriaState.quests[qIndex];
+    if (!quest || quest.completed) return;
+
+    let allDone = true;
+    for (const t of quest.sub_tasks) {
+        if (t.micro_steps && t.micro_steps.length > 0) {
+            if (!t.micro_steps.every(m => m.completed)) {
+                allDone = false;
+                break;
+            }
+        } else {
+            if (!t.completed) {
+                allDone = false;
+                break;
+            }
+        }
+    }
+
+    if (allDone) {
+        quest.completed = true;
+        const masterReward = quest.xp_reward || (quest.sub_tasks.length * 50);
+        await addXP(masterReward);
+
+        OriaAudio.playSuccess();
+        showCyberToast('Quest Completed! 🎉', `You earned +${masterReward} XP`, 'success');
+
+        const modalEl = document.getElementById('questChainModal');
+        if (window.bootstrap && modalEl) {
+            let modal = window.bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+    }
+}
+
+export async function completeTask(qIndex, tIndex) {
     const task = OriaState.quests[qIndex].sub_tasks[tIndex];
     if (task && !task.completed) {
         OriaAudio.playSuccess();
         task.completed = true;
-        addXP(task.xp_reward || 50);
+        await addXP(task.xp_reward || 50);
+
+        await checkQuestCompletion(qIndex);
+
+        try {
+            await saveStateAPI();
+        } catch (err) {
+            console.error('Failed to save module completion', err);
+        }
+
         renderQuests();
         renderProfileQuests();
     }
@@ -1109,3 +1589,57 @@ window.addEventListener('achievementUnlocked', (e) => {
         showAchievementBanner(e.detail.id);
     }
 });
+
+export function showCyberToast(title, message, type = 'success') {
+    const toast = document.createElement('div');
+
+    // Determine the glowing border color based on the type
+    let borderColor = 'var(--accent-blue)';
+    if (type === 'success') borderColor = 'var(--accent-green, #20c997)';
+    if (type === 'warning' || type === 'error') borderColor = 'var(--accent-pink, #ff2a6d)';
+
+    // Style the toast matching the cyberpunk visual theme
+    toast.className = 'glass-card shadow-lg p-3 d-flex align-items-center mb-3 mb-sm-4 me-sm-2';
+    toast.style.position = 'fixed';
+    toast.style.top = '25px';
+    toast.style.right = '25px';
+    toast.style.zIndex = '9999';
+    toast.style.minWidth = '280px';
+    toast.style.borderRadius = '12px';
+    toast.style.border = `1px solid ${borderColor}`;
+    toast.style.borderLeft = `5px solid ${borderColor}`;
+    toast.style.background = 'var(--card-bg)';
+    toast.style.color = 'var(--text-main)';
+    toast.style.transform = 'translateX(120%)';
+    toast.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease';
+    toast.style.opacity = '0';
+
+    // Icon logic based on success or warning
+    const iconHtml = type === 'success'
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${borderColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${borderColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+
+    // Build the inner HTML
+    toast.innerHTML = `
+        ${iconHtml}
+        <div>
+            <h6 class="fw-bold mb-1" style="font-size: 1rem;">${title}</h6>
+            <p class="mb-0 small" style="color: var(--text-muted);">${message}</p>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Trigger animation (slide in)
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    }, 10);
+
+    // Remove after 3.5 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(120%)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 400); // Wait for transition finish
+    }, 3500);
+}

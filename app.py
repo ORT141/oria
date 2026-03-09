@@ -12,15 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 load_dotenv('config.env')
 
 app = Flask(__name__)
-
-# Security: Load secret key from environment — never hardcode this
-_secret_key = os.environ.get('SECRET_KEY')
-if not _secret_key:
-    raise RuntimeError(
-        "FATAL: SECRET_KEY environment variable is not set. "
-        "Add SECRET_KEY=<random-64-char-hex> to your config.env file."
-    )
-app.secret_key = _secret_key
+app.secret_key = 'oria_very_secret_key' # In production, use a secure random key
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///users.db')

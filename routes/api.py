@@ -385,11 +385,15 @@ def api_chat():
         quick_quest_prompt = {
             "role": "user",
             "content": (
-                f"Break down this goal into a structured quest with sub-tasks: '{user_msg}'. "
+                f"Analyze the user's goal: '{user_msg}'. Auto-categorize it into one of: "
+                "[Study & Exams, Project & Coding, Habits & Routine, General]. "
+                "Adopt the relevant expert persona (e.g., strict academic tutor for Study). "
+                "Break the master goal into 3-5 high-level 'Modules' (sub_tasks). "
+                "For EACH module, immediately generate 5-8 concrete, actionable 10-minute 'micro_steps'. "
                 "You MUST bypass normal conversation and return the result STRICTLY as a valid JSON object. "
                 "The JSON must have the following structure: "
-                '{"title": "Quest Title", "difficulty": "Hard/Medium/Easy", "progress": 0, "sub_tasks": [{"id": 1, "task": "Short Subtask Name", "task_description": "A detailed explanation of what this entails.", "completed": false, "xp_reward": 50}]} '
-                "ALL text values in the JSON (titles, difficulty, task descriptions) MUST be strictly in English."
+                '{"category": "Study & Exams", "title": "Quest Title", "difficulty": "Hard/Medium/Easy", "progress": 0, "sub_tasks": [{"id": 1, "task": "Module 1: Name", "completed": false, "xp_reward": 50, "micro_steps": [{"id": 101, "task": "Actionable step", "task_description": "A detailed explanation.", "completed": false}, {"id": 102, "task": "Another step", "task_description": "Another explanation.", "completed": false}]}]} '
+                "ALL text values MUST be strictly in English."
             )
         }
         messages = [system_prompt, quick_quest_prompt]
