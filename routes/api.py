@@ -375,6 +375,11 @@ def api_chat():
             "Your persona should shine through in every response. "
             "IMPORTANT: If the user asks you to create a quest, or if you suggest a quest and the user agrees, "
             "you MUST call the `create_rpg_quest` tool to save it to the system. Do not just output it as plain text. "
+            "When you generate a quest, you MUST use the new nested JSON structure. "
+            "Categorize the quest into [Study & Exams, Project & Coding, Habits & Routine, General]. "
+            "Break the main goal into 3-5 high-level 'Modules' (sub_tasks). "
+            "For EACH module, generate 4-8 concrete, actionable 'micro_steps'. "
+            "MUST USE THE EXACT JSON FORMAT DEFINED BY THE TOOL: "
             "CRITICAL: You have full access to the user's past messages provided in this conversation context. "
             "NEVER say that you do not have memory of past dialogues. Use the history to provide personalized answers."
             + onboarding_context
@@ -417,25 +422,40 @@ def api_chat():
                     "parameters": {
                         "type": "object",
                         "properties": {
+                            "category": {"type": "string", "description": "Categorize the quest into [Study & Exams, Project & Coding, Habits & Routine, General]."},
                             "title": {"type": "string", "description": "The title of the quest."},
                             "difficulty": {"type": "string", "description": "Difficulty level: Easy, Medium, or Hard."},
                             "progress": {"type": "integer", "description": "Initial progress, should always be 0."},
                             "sub_tasks": {
                                 "type": "array",
+                                "description": "3-5 high-level Modules",
                                 "items": {
                                     "type": "object",
                                     "properties": {
-                                        "id": {"type": "integer", "description": "Subtask ID, starting from 1."},
-                                        "task": {"type": "string", "description": "Short name of the sub-task."},
-                                        "task_description": {"type": "string", "description": "Detailed explanation and engaging lore of the sub-task requirements."},
+                                        "id": {"type": "integer", "description": "Module ID, starting from 1."},
+                                        "task": {"type": "string", "description": "Short name of the Module."},
                                         "completed": {"type": "boolean", "description": "Should be false."},
-                                        "xp_reward": {"type": "integer", "description": "XP received for completing this sub-task."}
+                                        "xp_reward": {"type": "integer", "description": "XP received for completing this module."},
+                                        "micro_steps": {
+                                            "type": "array",
+                                            "description": "4-8 concrete, actionable micro-steps for this module.",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {"type": "integer", "description": "Micro-step ID (e.g., 101, 102)."},
+                                                    "task": {"type": "string", "description": "Specific task name."},
+                                                    "task_description": {"type": "string", "description": "Detailed explanation of the step."},
+                                                    "completed": {"type": "boolean", "description": "Should be false."}
+                                                },
+                                                "required": ["id", "task", "task_description", "completed"]
+                                            }
+                                        }
                                     },
-                                    "required": ["id", "task", "task_description", "completed", "xp_reward"]
+                                    "required": ["id", "task", "completed", "xp_reward", "micro_steps"]
                                 }
                             }
                         },
-                        "required": ["title", "difficulty", "progress", "sub_tasks"]
+                        "required": ["category", "title", "difficulty", "progress", "sub_tasks"]
                     }
                 }
             }
