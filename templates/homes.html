@@ -7,6 +7,11 @@
     <div class="d-flex justify-content-between align-items-center w-100 mb-2">
         <h1 class="mb-0">ORIA</h1>
         <div class="d-flex align-items-center">
+            <select id="languageToggle" class="form-select form-select-sm bg-dark text-info border-info me-3"
+                style="width: auto; display: inline-block; cursor: pointer;">
+                <option value="uk">UA</option>
+                <option value="en">EN</option>
+            </select>
             <button id="theme-toggle"
                 class="btn btn-sm btn-outline-secondary me-3 rounded-circle d-flex align-items-center justify-content-center"
                 style="width: 32px; height: 32px; padding: 0; border: none; background: transparent;">
@@ -17,7 +22,7 @@
                 </svg>
             </button>
             <a href="{{ url_for('auth.logout') }}" class="btn-outline-oria"
-                style="padding: 6px 16px; font-size: 0.85rem;">Log
+                style="padding: 6px 16px; font-size: 0.85rem;" data-i18n="nav_logout">Log
                 Out</a>
         </div>
     </div>
@@ -32,7 +37,7 @@
             <span class="badge bg-light text-dark rounded-pill px-3 py-1 shadow-sm border" style="font-size: 0.85rem;">
                 <img src="/static/img/star-icon.svg" width="16" height="16" alt="Star"
                     style="vertical-align: middle; margin-top: -2px;"> <span id="user-coins">{{ user.coins }}</span>
-                Coins
+                <span data-i18n="txt_coins">Coins</span>
             </span>
         </div>
         <div class="progress mb-1 mx-auto w-100"
@@ -51,7 +56,7 @@
         <div class="mb-2 text-center" style="margin-top: 5px;">
             <img src="{{ url_for('static', filename='img/IMG_8442.PNG') }}" alt="ORIA Mascot" class="mascot-home"
                 id="oria-mascot">
-            <h2 class="fw-bold mb-3 mt-1">Welcome, {{ user.username }}!</h2>
+            <h2 class="fw-bold mb-3 mt-1"><span data-i18n="txt_welcome">Welcome</span>, {{ user.username }}!</h2>
         </div>
 
         <!-- Quick Quest Input -->
@@ -59,9 +64,9 @@
             <div class="glass-search p-2 rounded-pill d-flex align-items-center"
                 style="background: var(--card-bg); border: 1px solid var(--glass-border); box-shadow: var(--shadow);">
                 <input type="text" id="quick-quest-input" class="form-control border-0 bg-transparent shadow-none"
-                    placeholder="Enter a quick goal">
+                    placeholder="Enter a quick goal" data-i18n-placeholder="quick_quest_placeholder">
                 <button id="btn-quick-quest" class="btn btn-primary-oria rounded-pill px-4 ms-2 py-2"
-                    style="white-space: nowrap;">Quest!</button>
+                    style="white-space: nowrap;" data-i18n="btn_quick_quest">Quest!</button>
             </div>
         </div>
 
@@ -80,7 +85,7 @@
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            Daily Quests
+                            <span data-i18n="tab_daily">Daily Quests</span>
                         </span>
                         <span class="d-flex align-items-center">
                             <button
@@ -123,7 +128,7 @@
                         <span class="d-flex align-items-center">
                             <img src="/static/img/star-icon.svg" width="20" height="20" class="me-2" alt="Star"
                                 style="vertical-align: middle; margin-top: -3px;">
-                            Active Quests
+                            <span data-i18n="tab_active">Active Quests</span>
                         </span>
                         <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -147,7 +152,8 @@
 
     <!-- PROFILE VIEW -->
     <div id="profile-view" class="d-none flex-grow-1 text-start" style="padding-bottom: 20px; min-height: 0;">
-        <h2 class="fw-bold mb-1 text-center mt-2">{{ user.username }}'s Profile</h2>
+        <h2 class="fw-bold mb-1 text-center mt-2"><span data-i18n="txt_user_profile">User Profile</span>: {{
+            user.username }}</h2>
         <p class="text-center mb-4">
             <span id="profile-title-badge" class="badge rounded-pill px-3 py-2 fw-bold"
                 style="background: var(--primary-gradient); font-size: 0.85rem; display: none;"></span>
@@ -177,7 +183,7 @@
 
                 <!-- Title Selection -->
                 <div class="glass-card p-4 mb-4" id="title-select-container">
-                    <p class="text-muted small mb-0">Loading titles...</p>
+                    <p class="text-muted small mb-0" data-i18n="txt_loading_titles">Loading titles...</p>
                 </div>
 
                 <!-- Skin Roulette -->
@@ -192,7 +198,7 @@
                         <path d="m14.5 15.8 3.3 3.3"></path>
                         <circle cx="12" cy="12" r="2"></circle>
                     </svg>
-                    Skin Roulette
+                    <span data-i18n="tab_roulette">Skin Roulette</span>
                 </h4>
                 <div id="roulette-area">
                     <div class="glass-card mb-4 p-4 text-center"
@@ -222,7 +228,7 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    My Skins
+                    <span data-i18n="tab_skins">My Skins</span>
                 </h4>
                 <div id="inventory-grid" class="store-grid-container mb-4">
                     <!-- Owned skins injected by JS -->
@@ -236,7 +242,7 @@
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                         <polyline points="22 4 12 14.01 9 11.01" />
                     </svg>
-                    Completed Quests
+                    <span data-i18n="tab_completed">Completed Quests</span>
                 </h4>
                 <div id="completed-quests-container" class="d-flex flex-column gap-3">
                     <p class="text-muted small text-center my-3 fw-bold" id="no-completed-quests-msg">No completed
@@ -249,7 +255,7 @@
 
     <!-- STATS VIEW -->
     <div id="stats-view" class="d-none flex-grow-1 text-start" style="padding-bottom: 20px; min-height: 0;">
-        <h2 class="fw-bold mb-4 text-center mt-2">Stats & Leaderboard</h2>
+        <h2 class="fw-bold mb-4 text-center mt-2" data-i18n="tab_stats">Stats & Leaderboard</h2>
 
         <div class="row text-start align-items-start">
             <div class="col-lg-5 mb-4">
@@ -263,7 +269,7 @@
                             <path d="M3 3v18h18"></path>
                             <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
                         </svg>
-                        Focus Areas
+                        <span data-i18n="tab_focus">Focus Areas</span>
                     </h4>
                     <div style="position: relative; height:250px; width:100%; display: flex; justify-content: center;">
                         <canvas id="productivityChart" style="max-height: 250px;"></canvas>
@@ -276,7 +282,8 @@
                     <div class="d-flex align-items-center justify-content-evenly">
                         <div class="pe-3 border-end border-muted" style="flex: 1;">
                             <h1 class="display-4 fw-bold text-primary mb-0" id="stats-level">{{ user.level }}</h1>
-                            <span class="text-muted small fw-semibold text-uppercase">Current Level</span>
+                            <span class="text-muted small fw-semibold text-uppercase"
+                                data-i18n="txt_current_level">Current Level</span>
                         </div>
                         <div class="ps-3" style="flex: 1;">
                             <h1
@@ -284,7 +291,8 @@
                                 <span id="stats-streak">{{ user.current_streak }}</span>
                                 <span style="font-size: 0.8em; margin-top:-5px;">🔥</span>
                             </h1>
-                            <span class="text-muted small fw-semibold text-uppercase">Day Streak</span>
+                            <span class="text-muted small fw-semibold text-uppercase" data-i18n="txt_day_streak">Day
+                                Streak</span>
                         </div>
                     </div>
                 </div>
@@ -297,24 +305,27 @@
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
-                    Achievements
+                    <span data-i18n="tab_achievements">Achievements</span>
                 </h4>
                 <p class="text-muted small mb-3">Complete daily missions and buy skins to unlock these badges.</p>
                 <div class="badge-grid mb-4">
                     <div class="badge-card badge-locked text-center" id="badge-initiate">
                         <div class="badge-icon mb-2">🔰</div>
-                        <h6 class="fw-bold mb-1">Initiate</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">Complete 1 Quest</small>
+                        <h6 class="fw-bold mb-1"><span data-i18n="ach_initiate_title">Initiate</span></h6>
+                        <small class="text-muted" style="font-size: 0.75rem;"><span
+                                data-i18n="ach_initiate_desc">Complete 1 Quest</span></small>
                     </div>
                     <div class="badge-card badge-locked text-center" id="badge-on-fire">
                         <div class="badge-icon mb-2">🔥</div>
-                        <h6 class="fw-bold mb-1">On Fire</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">3-Day Streak</small>
+                        <h6 class="fw-bold mb-1"><span data-i18n="ach_on_fire_title">On Fire</span></h6>
+                        <small class="text-muted" style="font-size: 0.75rem;"><span data-i18n="ach_on_fire_desc">3-Day
+                                Streak</span></small>
                     </div>
                     <div class="badge-card badge-locked text-center" id="badge-cyber-spender">
                         <div class="badge-icon mb-2">💸</div>
-                        <h6 class="fw-bold mb-1">Cyber Spender</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">Buy a Skin</small>
+                        <h6 class="fw-bold mb-1"><span data-i18n="ach_spender_title">Cyber Spender</span></h6>
+                        <small class="text-muted" style="font-size: 0.75rem;"><span data-i18n="btn_buy_skin">Buy a
+                                Skin</span></small>
                     </div>
                 </div>
             </div>
@@ -329,7 +340,7 @@
                             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                         </path>
                     </svg>
-                    👑 Global XP Rank
+                    <span data-i18n="tab_rank">👑 Global XP Rank</span>
                 </h4>
                 <div class="glass-card mb-4 p-0 overflow-hidden text-start">
                     <div class="list-group list-group-flush leaderboard-list" id="leaderboard-list-container">
@@ -342,57 +353,67 @@
 
     <!-- REWARDS VIEW -->
     <div id="rewards-view" class="d-none flex-grow-1 text-start" style="padding-bottom: 20px; min-height: 0;">
-        <h2 class="fw-bold mb-1 text-center mt-2">Level Rewards</h2>
-        <p class="text-muted text-center small mb-4">Unlock these rewards as you level up your account.</p>
+        <h2 class="fw-bold mb-1 text-center mt-2" data-i18n="tab_rewards">Level Rewards</h2>
+        <p class="text-muted text-center small mb-4" data-i18n="txt_rewards_subtitle">Unlock these rewards as you level
+            up your account.</p>
 
         <div class="glass-card p-0 overflow-hidden mb-4">
             <table class="table table-hover mb-0" style="color: var(--text-main);">
                 <thead>
                     <tr style="background: var(--primary-gradient); color: white;">
-                        <th class="py-3 px-4">Level</th>
-                        <th class="py-3 px-4">Reward</th>
-                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4" data-i18n="txt_level">Level</th>
+                        <th class="py-3 px-4" data-i18n="txt_reward">Reward</th>
+                        <th class="py-3 px-4 text-center" data-i18n="txt_status">Status</th>
                     </tr>
                 </thead>
                 <tbody id="rewards-table-body">
                     <tr>
                         <td class="px-4 py-3 fw-bold">🎮 Lv. 1</td>
-                        <td class="px-4 py-3">Starter Access — Daily Quests &amp; Quick Quest</td>
-                        <td class="px-4 py-3 text-center"><span class="badge bg-success">✓ Unlocked</span></td>
+                        <td class="px-4 py-3" data-i18n="txt_starter_access">Starter Access — Daily Quests &amp; Quick
+                            Quest</td>
+                        <td class="px-4 py-3 text-center"><span class="badge bg-success"
+                                data-i18n="txt_unlocked_check">✓ Unlocked</span></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">⭐ Lv. 2</td>
-                        <td class="px-4 py-3">+50 Bonus Coins Reward</td>
+                        <td class="px-4 py-3"><span data-i18n="txt_bonus_coins">+50 Bonus</span> <span
+                                data-i18n="txt_coins">Coins</span> <span data-i18n="txt_reward_suffix">Reward</span>
+                        </td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="2"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">🎡 Lv. 3</td>
-                        <td class="px-4 py-3">Skin Roulette Access Unlocked</td>
+                        <td class="px-4 py-3"><span data-i18n="txt_reward_lv3">Skin Roulette Access Unlocked</span></td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="3"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">🏆 Lv. 5</td>
-                        <td class="px-4 py-3">Exclusive Title: <strong>Cyber Initiate</strong></td>
+                        <td class="px-4 py-3"><span data-i18n="txt_exclusive_title">Exclusive Title:</span>
+                            <strong>Cyber Initiate</strong>
+                        </td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="5"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">🎁 Lv. 7</td>
-                        <td class="px-4 py-3">Free Skin Roulette Spin</td>
+                        <td class="px-4 py-3"><span data-i18n="txt_reward_lv7">Free Skin Roulette Spin</span></td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="7"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">🌟 Lv. 10</td>
-                        <td class="px-4 py-3">Exclusive Title: <strong>Neural Hacker</strong></td>
+                        <td class="px-4 py-3"><span data-i18n="txt_exclusive_title">Exclusive Title:</span>
+                            <strong>Neural Hacker</strong></td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="10"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">🔥 Lv. 15</td>
-                        <td class="px-4 py-3">Prestige Badge — Gold Frame on Leaderboard</td>
+                        <td class="px-4 py-3"><span data-i18n="txt_reward_lv15">Prestige Badge — Gold Frame on
+                                Leaderboard</span></td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="15"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3 fw-bold">👑 Lv. 20</td>
-                        <td class="px-4 py-3">Exclusive Title: <strong>System Overlord</strong></td>
+                        <td class="px-4 py-3"><span data-i18n="txt_exclusive_title">Exclusive Title:</span>
+                            <strong>System Overlord</strong></td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="20"></td>
                     </tr>
                 </tbody>
@@ -400,9 +421,11 @@
         </div>
 
         <div class="glass-card p-4 text-center" style="border: 2px dashed var(--accent-blue);">
-            <p class="mb-1 fw-bold" style="color: var(--text-main);">Your Current Level: <span
-                    id="rewards-current-level" class="text-primary">{{ user.level }}</span></p>
-            <p class="text-muted small mb-0">Keep completing quests and daily tasks to level up and claim your rewards!
+            <p class="mb-1 fw-bold" style="color: var(--text-main);"><span data-i18n="txt_your_current_level">Your
+                    Current Level</span>: <span id="rewards-current-level" class="text-primary">{{ user.level }}</span>
+            </p>
+            <p class="text-muted small mb-0" data-i18n="txt_rewards_footer">Keep completing quests and daily tasks to
+                level up and claim your rewards!
             </p>
         </div>
     </div>
@@ -415,7 +438,7 @@
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
-        <span class="d-none d-sm-inline">Home</span>
+        <span class="d-none d-sm-inline" data-i18n="nav_home">Home</span>
     </a>
     <a href="#" class="nav-item" id="nav-btn-rewards" onclick="showRewards(event)">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -426,7 +449,7 @@
             <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
             <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
         </svg>
-        <span class="d-none d-sm-inline">Rewards</span>
+        <span class="d-none d-sm-inline" data-i18n="nav_rewards">Rewards</span>
     </a>
     <a href="#" class="nav-item" data-bs-toggle="offcanvas" data-bs-target="#chatOffcanvas">
         <div class="floating-btn"></div>
@@ -438,7 +461,7 @@
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
-        <span class="d-none d-sm-inline">Stats</span>
+        <span class="d-none d-sm-inline" data-i18n="nav_stats">Stats</span>
     </a>
     <a href="#" class="nav-item" id="nav-btn-profile" onclick="showProfile(event)">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -446,7 +469,7 @@
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
         </svg>
-        <span class="d-none d-sm-inline">Profile</span>
+        <span class="d-none d-sm-inline" data-i18n="nav_profile">Profile</span>
     </a>
 </nav>
 
@@ -481,7 +504,8 @@
             <div class="input-group drop-shadow rounded-pill overflow-hidden shadow-sm"
                 style="background: white; border: 1px solid #eee;">
                 <input type="text" id="chat-input-text"
-                    class="form-control border-0 px-4 py-3 shadow-none bg-transparent" placeholder="Message ORIA...">
+                    class="form-control border-0 px-4 py-3 shadow-none bg-transparent" placeholder="Message ORIA..."
+                    data-i18n-placeholder="chat_placeholder">
                 <button class="btn border-0 text-white px-4" id="btn-send-chat"
                     style="background: var(--primary-gradient);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"

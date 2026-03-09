@@ -5,6 +5,243 @@ import {
     spinRouletteAPI, equipSkinAPI, fetchLeaderboardAPI
 } from './api.js';
 
+export const translations = {
+    en: {
+        nav_logout: "Log Out",
+        tab_daily: "Daily Quests",
+        tab_active: "Active Quests",
+        nav_home: "Home",
+        nav_rewards: "Rewards",
+        nav_stats: "Stats",
+        nav_profile: "Profile",
+        quick_quest_placeholder: "Enter a quick goal",
+        btn_quick_quest: "Quest!",
+        tab_roulette: "Skin Roulette",
+        tab_skins: "My Skins",
+        tab_completed: "Completed Quests",
+        tab_stats: "Stats & Leaderboard",
+        tab_focus: "Focus Areas",
+        tab_achievements: "Achievements",
+        tab_rank: "👑 Global XP Rank",
+        tab_rewards: "Level Rewards",
+        btn_back_to_modules: "← Back to Modules",
+        btn_open_module: "Open Module ➔",
+        txt_tap_to_expand: "Tap to expand",
+        txt_done: "Done",
+        msg_quest_completed: "Quest Completed! 🎉",
+        msg_xp_earned: "You earned +{XP} XP",
+        msg_coins_earned: "and +{COINS} Coins!",
+        btn_generate_test: "Generate Mini-Test",
+        cat_study: "Study & Exams",
+        cat_coding: "Project & Coding",
+        cat_habits: "Habits & Routine",
+        cat_general: "General",
+        txt_loading_titles: "Loading titles...",
+        txt_no_quests: "No quests yet. Ask ORIA or use Quick Quest!",
+        txt_no_completed: "No completed quests yet.",
+        txt_generate_test: "Generate Mini-Test 🧠",
+        txt_loading_hackers: "Loading hackers...",
+        txt_failed_leaderboard: "Failed to load leaderboard.",
+        txt_you: "(You)",
+        txt_no_titles_earned: "🔐 No titles earned yet. Claim the Lv. 5 reward in the <a href='#' onclick='window.showRewards(event)' class='text-primary fw-bold'>Rewards tab</a>!",
+        txt_equipped_title: "EQUIPPED TITLE",
+        txt_welcome: "Welcome",
+        txt_coins: "Coins",
+        btn_buy: "Buy",
+        btn_unlock: "Unlock",
+        btn_equip: "Equip",
+        txt_equipped: "Equipped",
+        txt_pin: "Pin",
+        txt_days: "Days",
+        txt_current_level: "current level",
+        txt_day_streak: "Day streak",
+        tab_profile: "Profile",
+        chat_placeholder: "Message ORIA...",
+        txt_sub_quest_line: "Sub-Quest Chain Line",
+        txt_completed: "Completed",
+        txt_tasks: "Tasks",
+        txt_steps_done: "{X}/{Y} Steps Done",
+        txt_xp_on_finish: "+{XP} XP on finish",
+        "Easy": "Easy",
+        "Medium": "Medium",
+        "Hard": "Hard",
+        btn_buy_skin: "Buy a Skin",
+        txt_rewards_subtitle: "Unlock these rewards as you level up your account.",
+        txt_level: "Level",
+        txt_reward: "Reward",
+        txt_status: "Status",
+        txt_starter_access: "Starter Access — Daily Quests & Quick Quest",
+        txt_unlocked_check: "✓ Unlocked",
+        txt_bonus_coins: "+50 Bonus",
+        txt_reward_suffix: "Reward",
+        txt_exclusive_title: "Exclusive Title:",
+        txt_user_profile: "User Profile",
+        txt_current_level: "Current Level",
+        txt_your_current_level: "Your Current Level",
+        txt_day_streak: "Day Streak",
+        ach_initiate_title: "Initiate",
+        ach_initiate_desc: "Complete 1 Quest",
+        ach_on_fire_title: "On Fire",
+        ach_on_fire_desc: "3-Day Streak",
+        ach_spender_title: "Cyber Spender",
+        txt_rewards_footer: "Keep completing quests and daily tasks to level up and claim your rewards!",
+        txt_achievement_unlocked: "Achievement Unlocked",
+        tap_to_expand: "Tap to expand",
+        module_reward: "Module Reward:",
+        done: "Done",
+        txt_level_prefix: "Level",
+        no_title: "(No title)",
+        spin_button: "SPIN ROULETTE (Wait 20m)",
+        spinning: "Spinning...",
+        unlocked: "You unlocked",
+        claim: "Claim",
+        claimed: "Claimed",
+        level_needed: "Lv. {L} needed",
+        txt_reward_lv3: "Skin Roulette Access Unlocked",
+        txt_reward_lv7: "Free Skin Roulette Spin",
+        txt_reward_lv15: "Prestige Badge — Gold Frame on Leaderboard"
+    },
+    uk: {
+        nav_logout: "Вийти",
+        tab_daily: "Щоденні квести",
+        tab_active: "Активні квести",
+        nav_home: "Головна",
+        nav_rewards: "Нагороди",
+        nav_stats: "Статистика",
+        nav_profile: "Профіль",
+        quick_quest_placeholder: "Введіть швидку ціль",
+        btn_quick_quest: "Квест!",
+        tab_roulette: "Рулєтка скінів",
+        tab_skins: "Мої скіни",
+        tab_completed: "Завершені квести",
+        tab_stats: "Статист. та Лідери",
+        tab_focus: "Сфери Фокусу",
+        tab_achievements: "Досягнення",
+        tab_rank: "👑 Глобальний XP Рейтинг",
+        tab_rewards: "Нагороди за рівень",
+        btn_back_to_modules: "← Назад до модулів",
+        btn_open_module: "Відкрити модуль ➔",
+        txt_tap_to_expand: "Натисніть, щоб розгорнути",
+        txt_done: "Виконано",
+        msg_quest_completed: "Квест виконано! 🎉",
+        msg_xp_earned: "Ви отримали +{XP} XP",
+        msg_coins_earned: "та +{COINS} Coins!",
+        btn_generate_test: "Створити міні-тест",
+        cat_study: "Навчання та Іспити",
+        cat_coding: "Проєкти та Кодинг",
+        cat_habits: "Звички та Рутина",
+        cat_general: "Загальне",
+        txt_loading_titles: "Завантаження титулів...",
+        txt_no_quests: "Ще немає квестів. Спитайте ORIA або використайте Швидкий Квест!",
+        txt_no_completed: "Ще немає завершених квестів.",
+        txt_generate_test: "Створити міні-тест 🧠",
+        txt_loading_hackers: "Завантаження хакерів...",
+        txt_failed_leaderboard: "Помилка завантаження таблиці лідерів.",
+        txt_you: "(Ви)",
+        txt_no_titles_earned: "🔐 Ще немає зароблених титулів. Отримайте нагороду 5 рівня на <a href='#' onclick='window.showRewards(event)' class='text-primary fw-bold'>вкладці Нагороди</a>!",
+        txt_equipped_title: "АКТИВНИЙ ТИТУЛ",
+        txt_welcome: "Вітаємо",
+        txt_coins: "Зірки",
+        btn_buy: "Купити",
+        btn_unlock: "Розблокувати",
+        btn_equip: "Одягнути",
+        txt_equipped: "Одягнено",
+        txt_pin: "Закріпити",
+        txt_days: "Днів",
+        txt_current_level: "поточний рівень",
+        txt_day_streak: "Серія днів",
+        tab_profile: "Профіль",
+        chat_placeholder: "Написати ORIA...",
+        txt_sub_quest_line: "Ланцюжок підквестів",
+        txt_completed: "Виконано",
+        txt_tasks: "Завдань",
+        txt_steps_done: "{X}/{Y} Кроків виконано",
+        txt_xp_on_finish: "+{XP} XP за завершення",
+        "Easy": "Легкий",
+        "Medium": "Середній",
+        "Hard": "Складний",
+        btn_buy_skin: "Купити скін",
+        txt_rewards_subtitle: "Розблоковуйте ці нагороди під час підвищення рівня вашого акаунту.",
+        txt_level: "Рівень",
+        txt_reward: "Нагорода",
+        txt_status: "Статус",
+        txt_starter_access: "Початковий доступ — Щоденні квести та Швидкий Квест",
+        txt_unlocked_check: "✓ Розблоковано",
+        txt_bonus_coins: "+50 Бонусних",
+        txt_reward_suffix: "Нагорода",
+        txt_exclusive_title: "Ексклюзивний титул:",
+        txt_user_profile: "Профіль користувача",
+        txt_current_level: "Поточний рівень",
+        txt_your_current_level: "Ваш поточний рівень",
+        txt_day_streak: "Серія днів",
+        ach_initiate_title: "Початківець",
+        ach_initiate_desc: "Виконайте 1 Квест",
+        ach_on_fire_title: "У вогні",
+        ach_on_fire_desc: "Серія з 3 днів",
+        ach_spender_title: "Кібервитратник",
+        txt_rewards_footer: "Продовжуйте виконувати квести та щоденні завдання, щоб підвищувати рівень та отримувати нагороди!",
+        txt_achievement_unlocked: "Досягнення розблоковано",
+        tap_to_expand: "Натисніть, щоб розгорнути",
+        module_reward: "Нагорода за модуль:",
+        done: "Виконано",
+        txt_level_prefix: "Рівень",
+        no_title: "(Без титулу)",
+        spin_button: "КРУТИТИ (Очікуй 20хв)",
+        spinning: "Обертається...",
+        unlocked: "Ви розблокували",
+        claim: "Отримати",
+        claimed: "Отримано",
+        level_needed: "Потрібен рів. {L}",
+        txt_reward_lv3: "Доступ до Рулетки Скінів",
+        txt_reward_lv7: "Безкоштовне обертання Рулетки",
+        txt_reward_lv15: "Престижний значок — Золота рамка в таблиці лідерів"
+    }
+};
+
+export function setLanguage(lang) {
+    if (!translations[lang]) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.innerText = translations[lang][key];
+        }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+            el.placeholder = translations[lang][key];
+        }
+    });
+    localStorage.setItem('oria_lang', lang);
+}
+window.setLanguage = setLanguage;
+
+export function t(key, params = {}) {
+    const lang = localStorage.getItem('oria_lang') || 'uk';
+    const dict = translations[lang] || translations['en'];
+    let str = dict[key] || key;
+
+    // Simple string interpolation for params like +{XP}
+    for (const [k, v] of Object.entries(params)) {
+        str = str.replace(`{${k}}`, v);
+    }
+    return str;
+}
+window.t = t;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const langToggle = document.getElementById('languageToggle');
+    if (langToggle) {
+        const savedLang = localStorage.getItem('oria_lang') || 'uk';
+        langToggle.value = savedLang;
+        setLanguage(savedLang);
+
+        langToggle.addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+    }
+});
+
 /**
  * Returns the title earned at a given level. Empty string = no title yet.
  */
@@ -361,7 +598,7 @@ export function refreshDailyQuestsHandler(btnElement) {
 export function openQuestModal(index) {
     const quest = OriaState.quests[index];
     document.getElementById('questModalTitle').textContent = quest.title;
-    document.getElementById('questModalDifficulty').textContent = quest.difficulty;
+    document.getElementById('questModalDifficulty').textContent = window.t(quest.difficulty) || quest.difficulty;
 
     let completedTasks = 0;
     let totalTasks = 0;
@@ -376,7 +613,7 @@ export function openQuestModal(index) {
     });
     const progress = Math.round((completedTasks / totalTasks) * 100) || 0;
 
-    document.getElementById('questProgressText').textContent = `${progress}% Completed`;
+    document.getElementById('questProgressText').textContent = `${progress}% ${window.t('txt_completed')}`;
     document.getElementById('questModalProgress').style.width = `${progress}%`;
 
     const list = document.getElementById('questChainList');
@@ -396,11 +633,11 @@ export function openQuestModal(index) {
             <div class="d-flex justify-content-between align-items-center w-100" style="cursor: pointer;">
                 <div>
                     <h6 class="fw-bold mb-1 ${task.completed ? 'text-decoration-line-through text-muted' : 'text-dark'}">${task.task}</h6>
-                    <small class="text-muted fw-bold" style="color: var(--accent-pink) !important;">${mDone}/${mTotal} Steps Done • +${task.xp_reward || 50} XP on finish</small>
+                    <small class="text-muted fw-bold" style="color: var(--accent-pink) !important;">${window.t('txt_steps_done', { X: mDone, Y: mTotal })} • ${window.t('txt_xp_on_finish', { XP: task.xp_reward || 50 })}</small>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    ${task.completed ? '<span class="text-success fw-bold">✓ Done</span>' : ''}
-                    <button class="btn btn-sm btn-outline-info rounded-pill px-3">Open Module ➔</button>
+                    ${task.completed ? `<span class="text-success fw-bold">✓ ${window.t('done')}</span>` : ''}
+                    <button class="btn btn-sm btn-outline-info rounded-pill px-3">${window.t('btn_open_module')}</button>
                 </div>
             </div>
         `;
@@ -435,7 +672,7 @@ function openModuleView(qIndex, tIndex) {
     list.innerHTML = `
         <div>
             <button class="btn btn-sm btn-secondary mb-3 rounded-pill fw-bold shadow-sm px-3 border-0" style="background: rgba(0,0,0,0.05); color: var(--text-main);" id="btnBackToModules">
-                ← Back to Modules
+                ${window.t('btn_back_to_modules')}
             </button>
             <h4 class="mb-2 text-info fw-bold">${task.task}</h4>
             ${task.task_description ? `<p class="text-muted small mb-4">${task.task_description}</p>` : '<div class="mb-4"></div>'}
@@ -547,7 +784,7 @@ function openModuleView(qIndex, tIndex) {
                     bodyHtml += `
                         <div class="mt-2 text-end">
                             <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold micro-btn-generate-quiz" style="font-size: 0.8rem;" data-qindex="${qIndex}" data-tindex="${tIndex}" data-mindex="${mIdx}">
-                                Generate Mini-Test
+                                ${window.t('btn_generate_test')}
                             </button>
                         </div>
                     `;
@@ -585,8 +822,8 @@ function openModuleView(qIndex, tIndex) {
     } else {
         stepsContainer.innerHTML = `
             <div class="d-flex justify-content-between align-items-center p-3 glass-card rounded-3 mb-3 border border-primary border-opacity-25">
-                <span class="fw-bold text-dark">Full Module Completion</span>
-                ${!task.completed ? `<button class="btn btn-sm text-white rounded-pill px-3 py-1 btn-complete-task fw-bold shadow-sm" style="background: var(--primary-gradient);" data-qindex="${qIndex}" data-tindex="${tIndex}">Complete (+${task.xp_reward || 50} XP)</button>` : '<span class="text-success fw-bold">✓ Done</span>'}
+                <span class="fw-bold text-dark">${window.t('module_reward')}</span>
+                ${!task.completed ? `<button class="btn btn-sm text-white rounded-pill px-3 py-1 btn-complete-task fw-bold shadow-sm" style="background: var(--primary-gradient);" data-qindex="${qIndex}" data-tindex="${tIndex}">Complete (+${task.xp_reward || 50} XP)</button>` : `<span class="text-success fw-bold">✓ ${window.t('done')}</span>`}
             </div>
         `;
     }
@@ -652,7 +889,7 @@ function openModuleView(qIndex, tIndex) {
             <div class="text-center mt-4 pt-3 border-top border-opacity-50">
                 <button class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold shadow-sm btn-generate-quiz" data-qindex="${qIndex}" data-tindex="${tIndex}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1 mb-1"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    Generate Mini-Test to Prove Module Mastery
+                    ${window.t('btn_generate_test')}
                 </button>
             </div>
         `;
@@ -752,7 +989,7 @@ function openModuleView(qIndex, tIndex) {
                 });
                 const progressPercentage = Math.round((completedTaskCount / totalTaskCount) * 100) || 0;
                 const progressTextEl = document.getElementById('questProgressText');
-                if (progressTextEl) progressTextEl.textContent = `${progressPercentage}% Completed`;
+                if (progressTextEl) progressTextEl.textContent = `${progressPercentage}% ${window.t('txt_completed')}`;
                 const progressBarEl = document.getElementById('questModalProgress');
                 if (progressBarEl) progressBarEl.style.width = `${progressPercentage}%`;
             }
@@ -1105,13 +1342,13 @@ export function renderProfileQuests() {
         card.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="fw-bold mb-0 text-dark">${quest.title}</h6>
-                <span class="badge" style="background: var(--accent-blue);">${quest.difficulty}</span>
+                <span class="badge" style="background: var(--accent-blue);">${window.t(quest.difficulty.toLowerCase()) || window.t(quest.difficulty) || quest.difficulty}</span>
             </div>
             <div class="progress mt-2 border" style="height: 6px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
               <div class="progress-bar" role="progressbar" style="width: ${progress}%; background: var(--accent-blue);"></div>
             </div>
             <div class="d-flex justify-content-between mt-2 small text-muted">
-                <span>${completedTasks}/${totalTasks} Tasks</span>
+                <span>${completedTasks}/${totalTasks} ${window.t('txt_tasks')}</span>
                 <span class="fw-bold">${progress}%</span>
             </div>
         `;
@@ -1153,9 +1390,9 @@ export function renderInventory() {
 
         let btnHtml = '';
         if (isEquipped) {
-            btnHtml = `<button class="btn btn-sm btn-success w-100 rounded-pill fw-bold disabled">Equipped</button>`;
+            btnHtml = `<button class="btn btn-sm btn-success w-100 rounded-pill fw-bold disabled">${window.t('txt_equipped')}</button>`;
         } else {
-            btnHtml = `<button class="btn btn-sm btn-outline-primary w-100 rounded-pill fw-bold" onclick="window.equipSkin('${item.id}')">Equip</button>`;
+            btnHtml = `<button class="btn btn-sm btn-outline-primary w-100 rounded-pill fw-bold" onclick="window.equipSkin('${item.id}')">${window.t('btn_equip')}</button>`;
         }
 
         card.innerHTML = `
@@ -1195,7 +1432,7 @@ export function spinRouletteHandler(cost) {
     const imgEl = document.getElementById('roulette-display-img');
     const btnEl = document.getElementById('btn-spin-roulette');
 
-    msgEl.textContent = 'Spinning...';
+    msgEl.textContent = window.t('spinning');
     msgEl.className = 'text-primary small mt-2 mb-0 fw-bold';
     btnEl.disabled = true;
 
@@ -1231,7 +1468,7 @@ export function spinRouletteHandler(cost) {
                     const wonSkinObj = storeItems.find(s => s.id === data.unlocked_skin);
                     if (wonSkinObj) imgEl.src = wonSkinObj.image;
 
-                    msgEl.textContent = `You unlocked ${wonSkinObj ? wonSkinObj.name : data.unlocked_skin}! 🎉`;
+                    msgEl.textContent = `${window.t('unlocked')} ${wonSkinObj ? wonSkinObj.name : data.unlocked_skin}! 🎉`;
                     msgEl.className = 'text-success small mt-2 mb-0 fw-bold';
 
                     updateDOMState();
@@ -1298,9 +1535,9 @@ window.showDashboard = function (e) {
 
 export function showAchievementBanner(id) {
     const titles = {
-        'initiate': { title: 'Initiate', icon: '🔰', desc: 'Completed your first quest!' },
-        'on_fire': { title: 'On Fire', icon: '🔥', desc: 'Achieved a 3-Day streak!' },
-        'cyber_spender': { title: 'Cyber Spender', icon: '💸', desc: 'Bought your first skin!' }
+        'initiate': { title: window.t('ach_initiate_title'), icon: '🔰', desc: window.t('ach_initiate_desc') },
+        'on_fire': { title: window.t('ach_on_fire_title'), icon: '🔥', desc: window.t('ach_on_fire_desc') },
+        'cyber_spender': { title: window.t('ach_spender_title'), icon: '💸', desc: window.t('btn_buy_skin') }
     };
 
     const ach = titles[id];
@@ -1310,7 +1547,7 @@ export function showAchievementBanner(id) {
     if (!toast) return;
 
     document.getElementById('toast-icon').textContent = ach.icon;
-    document.getElementById('toast-title').textContent = 'Achievement Unlocked: ' + ach.title;
+    document.getElementById('toast-title').textContent = window.t('txt_achievement_unlocked') + ': ' + ach.title;
     document.getElementById('toast-desc').textContent = ach.desc;
 
     toast.classList.remove('toast-hidden');
@@ -1452,7 +1689,7 @@ async function renderLeaderboard() {
     const listContainer = document.getElementById('leaderboard-list-container');
     if (!listContainer) return;
 
-    listContainer.innerHTML = '<div class="text-center p-3"><small class="text-muted">Loading hackers...</small></div>';
+    listContainer.innerHTML = `<div class="text-center p-3"><small class="text-muted">${window.t('txt_loading_hackers')}</small></div>`;
 
     try {
         const data = await fetchLeaderboardAPI();
@@ -1485,8 +1722,8 @@ async function renderLeaderboard() {
                     <div class="d-flex align-items-center gap-3">
                         <span class="fs-4 fw-bold ${rankClass}">${index + 1}</span>
                         <div>
-                            <h6 class="mb-0 fw-bold ${nameClass} d-flex align-items-center gap-1">${user.username}${isCurrentUser ? ' (You)' : ''} ${title ? `<span class="badge rounded-pill fw-bold leaderboard-title-badge ${isCurrentUser ? 'leaderboard-current-user-title' : ''}" style="background: var(--primary-gradient); font-size: 0.68rem; vertical-align: middle;">${title}</span>` : (isCurrentUser ? `<span class="leaderboard-current-user-title" style="display:none;"></span>` : '')}</h6>
-                            <small class="${isCurrentUser ? 'text-primary' : 'text-muted'}">Lvl ${user.level} • ${user.xp} XP •  🔥 ${user.current_streak || 0} Days</small>
+                            <h6 class="mb-0 fw-bold ${nameClass} d-flex align-items-center gap-1">${user.username}${isCurrentUser ? ` ${window.t('txt_you')}` : ''} ${title ? `<span class="badge rounded-pill fw-bold leaderboard-title-badge ${isCurrentUser ? 'leaderboard-current-user-title' : ''}" style="background: var(--primary-gradient); font-size: 0.68rem; vertical-align: middle;">${title}</span>` : (isCurrentUser ? `<span class="leaderboard-current-user-title" style="display:none;"></span>` : '')}</h6>
+                            <small class="${isCurrentUser ? 'text-primary' : 'text-muted'}">Lvl ${user.level} • ${user.xp} XP •  🔥 ${user.current_streak || 0} ${window.t('txt_days')}</small>
                         </div>
                     </div>
                 `;
@@ -1494,7 +1731,7 @@ async function renderLeaderboard() {
             });
         }
     } catch (err) {
-        listContainer.innerHTML = '<div class="text-center p-3 text-danger"><small>Failed to load leaderboard.</small></div>';
+        listContainer.innerHTML = `<div class="text-center p-3 text-danger"><small>${window.t('txt_failed_leaderboard')}</small></div>`;
         console.error("Leaderboard Error:", err);
     }
 }
@@ -1534,19 +1771,19 @@ window.showProfile = function (e) {
 
         if (unlockedTitles.length === 0) {
             titleSelectContainer.innerHTML = `
-                <p class="fw-bold mb-1" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 0.8rem; letter-spacing: 0.08em;">EQUIPPED TITLE</p>
+                <p class="fw-bold mb-1" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 0.8rem; letter-spacing: 0.08em;">${window.t('txt_equipped_title')}</p>
                 <p class="text-muted small mb-0">
-                    🔐 No titles earned yet. Claim the Lv. 5 reward in the <a href="#" onclick="window.showRewards(event)" class="text-primary fw-bold">Rewards tab</a>!
+                    ${window.t('txt_no_titles_earned')}
                 </p>`;
         } else {
             const current = OriaState.equipped_title || '';
-            const options = ['<option value="">(No title)</option>']
+            const options = [`<option value="">${window.t('no_title')}</option>`]
                 .concat(unlockedTitles.map(t =>
                     `<option value="${t}"${t === current ? ' selected' : ''}>${t}</option>`
                 )).join('');
 
             titleSelectContainer.innerHTML = `
-                <p class="fw-bold mb-2" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 0.8rem; letter-spacing: 0.08em;">EQUIPPED TITLE</p>
+                <p class="fw-bold mb-2" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 0.8rem; letter-spacing: 0.08em;">${window.t('txt_equipped_title')}</p>
                 <select id="equipped-title-select" class="form-select form-select-sm title-select-themed">
                     ${options}
                 </select>`;
@@ -1637,12 +1874,12 @@ window.showRewards = function (e) {
 
         if (claimed.includes(requiredLevel)) {
             // Already claimed
-            cell.innerHTML = '<span class="fw-bold" style="color: var(--bs-success);">\u2713 Claimed</span>';
+            cell.innerHTML = `<span class="fw-bold" style="color: var(--bs-success);">\u2713 ${window.t('claimed')}</span>`;
         } else if (OriaState.level >= requiredLevel) {
             // Eligible — show Claim button
             const btn = document.createElement('button');
             btn.className = 'btn btn-sm btn-primary fw-bold rounded-pill px-3';
-            btn.textContent = 'Claim';
+            btn.textContent = window.t('claim');
             btn.dataset.level = requiredLevel;
             btn.addEventListener('click', async function () {
                 btn.disabled = true;
@@ -1658,7 +1895,7 @@ window.showRewards = function (e) {
                     // If profile is not showing, still refresh select next time it opens
                 } catch (err) {
                     btn.disabled = false;
-                    btn.textContent = 'Claim';
+                    btn.textContent = window.t('claim');
                     const msg = err.message || 'Claim failed';
                     cell.innerHTML += `<br><small class="text-danger">${msg}</small>`;
                 }
@@ -1666,7 +1903,7 @@ window.showRewards = function (e) {
             cell.appendChild(btn);
         } else {
             // Locked
-            cell.innerHTML = `<span class="badge" style="background: rgba(128,128,128,0.2); color: var(--text-muted);">Lv. ${requiredLevel} needed</span>`;
+            cell.innerHTML = `<span class="badge" style="background: rgba(128,128,128,0.2); color: var(--text-muted);">${window.t('level_needed', { L: requiredLevel })}</span>`;
         }
     });
 };

@@ -39,12 +39,12 @@ def _generate_daily_quests(user):
                 all_incomplete_subtasks.append(sub_task.get('task', 'Unknown Task'))
 
     static_tasks_pool = [
-        "drink water",
-        "do a 5 minute warm-up",
-        "air out the room",
-        "read 10 pages of a book",
-        "go for a 15 minute walk",
-        "write down three things you're grateful for today"
+        "випити води",
+        "зробити 5-хвилинну розминку",
+        "провітрити кімнату",
+        "прочитати 10 сторінок книги",
+        "вийти на 15-хвилинну прогулянку",
+        "записати три речі, за які ви вдячні сьогодні"
     ]
 
     if len(all_incomplete_subtasks) >= 2:
@@ -68,8 +68,8 @@ def _generate_daily_quests(user):
                     f'You are ORIA, a Cyberpunk System Guide. Here are two daily tasks the user already has: '
                     f'"{chosen_tasks[0]}" and "{chosen_tasks[1]}". '
                     'Generate a 3rd unique, very simple daily physical/mental wellbeing task. '
-                    'The task MUST be in English. '
-                    'Return ONLY a valid JSON object: {"task": "Task name here", "completed": false, "xp_reward": 20}'
+                    'Return ONLY a valid JSON object: {"task": "Task name here", "completed": false, "xp_reward": 20} '
+                    'CRITICAL LANGUAGE RULE: You MUST generate the daily quests entirely in Ukrainian.'
                 )}
             ],
             temperature=0.7
@@ -84,7 +84,7 @@ def _generate_daily_quests(user):
         daily_quests.append(ai_data)
     except Exception as e:
         print(f"Error generating AI daily task: {e}")
-        daily_quests.append({"id": "daily_3", "task": "Smile at your reflection", "completed": False, "xp_reward": 20})
+        daily_quests.append({"id": "daily_3", "task": "Посміхніться своєму відображенню", "completed": False, "xp_reward": 20})
 
     user.set_daily_quests(daily_quests)
     user.last_daily_date = today_str
@@ -381,7 +381,8 @@ def api_chat():
             "For EACH module, generate 4-8 concrete, actionable 'micro_steps'. "
             "MUST USE THE EXACT JSON FORMAT DEFINED BY THE TOOL: "
             "CRITICAL: You have full access to the user's past messages provided in this conversation context. "
-            "NEVER say that you do not have memory of past dialogues. Use the history to provide personalized answers."
+            "NEVER say that you do not have memory of past dialogues. Use the history to provide personalized answers. "
+            "CRITICAL LANGUAGE RULE: You are strictly restricted to communicating, generating quests, and writing JSON ONLY in Ukrainian or English. If the user prompts you in Ukrainian, generate everything in Ukrainian. If the user prompts you in English, generate everything in English. If the user writes in ANY OTHER language, you must completely ignore that language and respond strictly in Ukrainian."
             + onboarding_context
         )
     }
@@ -588,8 +589,9 @@ def api_quiz_generate():
                 "You are an educational AI assistant that creates engaging multiple-choice quizzes. "
                 "Generate a quiz strictly based on the provided topic. Return ONLY a valid JSON object. "
                 "The JSON MUST have the structure: "
-                '{"questions": [{"question": "...", "options": ["...", "...", "...", "..."], "correct_option_index": 0}]}'
-                "Ensure there are exactly 4 options for each question, and the correct_option_index is between 0 and 3."
+                '{"questions": [{"question": "...", "options": ["...", "...", "...", "..."], "correct_option_index": 0}]} '
+                "Ensure there are exactly 4 options for each question, and the correct_option_index is between 0 and 3. "
+                "CRITICAL LANGUAGE RULE: You are strictly restricted to communicating, generating quests, and writing JSON ONLY in Ukrainian or English. If the user prompts you in Ukrainian, generate everything in Ukrainian. If the user prompts you in English, generate everything in English. If the user writes in ANY OTHER language, you must completely ignore that language and respond strictly in Ukrainian."
             )
         }
 
@@ -637,7 +639,8 @@ def api_quiz_explain():
             "content": (
                 "You are ORIA, an opossum System Guide. Provide a short, punchy, 1-2 sentence explanation. "
                 "Explain why the user's answer was wrong (if it was) and why the correct answer is right. "
-                "Keep the tone encouraging but slightly edgy."
+                "Keep the tone encouraging but slightly edgy. "
+                "CRITICAL LANGUAGE RULE: You are strictly restricted to communicating, generating quests, and writing JSON ONLY in Ukrainian or English. If the user prompts you in Ukrainian, generate everything in Ukrainian. If the user prompts you in English, generate everything in English. If the user writes in ANY OTHER language, you must completely ignore that language and respond strictly in Ukrainian."
             )
         }
 
