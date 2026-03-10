@@ -7,8 +7,8 @@
     <div class="d-flex justify-content-between align-items-center w-100 mb-2">
         <h1 class="mb-0">ORIA</h1>
         <div class="d-flex align-items-center">
-            <select id="languageToggle" class="form-select form-select-sm bg-dark text-info border-info me-3"
-                style="width: auto; display: inline-block; cursor: pointer;">
+            <select id="languageToggle" class="form-select form-select-sm title-select-themed me-3"
+                style="width: auto; display: inline-block; cursor: pointer; color: var(--text-main); border-color: var(--glass-border);">
                 <option value="uk">UA</option>
                 <option value="en">EN</option>
             </select>
@@ -32,7 +32,7 @@
         <div class="gamification-status mb-2 d-flex justify-content-center align-items-center gap-3">
             <span class="badge bg-primary rounded-pill px-3 py-1 shadow-sm"
                 style="font-size: 0.85rem; background: var(--primary-gradient) !important;">
-                Level <span id="user-level">{{ user.level }}</span>
+                <span data-i18n="txt_level_prefix">Level</span> <span id="user-level">{{ user.level }}</span>
             </span>
             <span class="badge bg-light text-dark rounded-pill px-3 py-1 shadow-sm border" style="font-size: 0.85rem;">
                 <img src="/static/img/star-icon.svg" width="16" height="16" alt="Star"
@@ -164,7 +164,8 @@
                 <!-- Stats Card -->
                 <div class="glass-card p-4 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fs-5 fw-bold text-primary">Level <span id="profile-level">{{ user.level
+                        <span class="fs-5 fw-bold text-primary"><span data-i18n="txt_level_prefix">Level</span> <span
+                                id="profile-level">{{ user.level
                                 }}</span></span>
                         <span
                             class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-2 fs-6 shadow-sm border border-warning"><img
@@ -401,7 +402,8 @@
                     <tr>
                         <td class="px-4 py-3 fw-bold">🌟 Lv. 10</td>
                         <td class="px-4 py-3"><span data-i18n="txt_exclusive_title">Exclusive Title:</span>
-                            <strong>Neural Hacker</strong></td>
+                            <strong>Neural Hacker</strong>
+                        </td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="10"></td>
                     </tr>
                     <tr>
@@ -413,7 +415,8 @@
                     <tr>
                         <td class="px-4 py-3 fw-bold">👑 Lv. 20</td>
                         <td class="px-4 py-3"><span data-i18n="txt_exclusive_title">Exclusive Title:</span>
-                            <strong>System Overlord</strong></td>
+                            <strong>System Overlord</strong>
+                        </td>
                         <td class="px-4 py-3 text-center rewards-status" data-level="20"></td>
                     </tr>
                 </tbody>

@@ -376,7 +376,8 @@ def api_chat():
             "IMPORTANT: If the user asks you to create a quest, or if you suggest a quest and the user agrees, "
             "you MUST call the `create_rpg_quest` tool to save it to the system. Do not just output it as plain text. "
             "When you generate a quest, you MUST use the new nested JSON structure. "
-            "Categorize the quest into [Study & Exams, Project & Coding, Habits & Routine, General]. "
+            "You MUST categorize the quest EXACTLY into one of these 4 strings: 'Study & Exams', 'Project & Coding', 'Habits & Routine', 'General'. DO NOT create custom categories under any circumstances. "
+            "You MUST evaluate the complexity of the user's goal and assign the difficulty field to exactly one of these strings: 'Easy', 'Medium', 'Hard', or 'Epic'. Do not always default to Medium. "
             "Break the main goal into 3-5 high-level 'Modules' (sub_tasks). "
             "For EACH module, generate 4-8 concrete, actionable 'micro_steps'. "
             "MUST USE THE EXACT JSON FORMAT DEFINED BY THE TOOL: "
@@ -391,14 +392,15 @@ def api_chat():
         quick_quest_prompt = {
             "role": "user",
             "content": (
-                f"Analyze the user's goal: '{user_msg}'. Auto-categorize it into one of: "
-                "[Study & Exams, Project & Coding, Habits & Routine, General]. "
+                f"Analyze the user's goal: '{user_msg}'. "
+                "You MUST categorize the quest EXACTLY into one of these 4 strings: 'Study & Exams', 'Project & Coding', 'Habits & Routine', 'General'. DO NOT create custom categories under any circumstances. "
+                "You MUST evaluate the complexity of the user's goal and assign the difficulty field to exactly one of these strings: 'Easy', 'Medium', 'Hard', or 'Epic'. Do not always default to Medium. "
                 "Adopt the relevant expert persona (e.g., strict academic tutor for Study). "
                 "Break the master goal into 3-5 high-level 'Modules' (sub_tasks). "
                 "For EACH module, immediately generate 5-8 concrete, actionable 10-minute 'micro_steps'. "
                 "You MUST bypass normal conversation and return the result STRICTLY as a valid JSON object. "
                 "The JSON must have the following structure: "
-                '{"category": "Study & Exams", "title": "Quest Title", "difficulty": "Hard/Medium/Easy", "progress": 0, "sub_tasks": [{"id": 1, "task": "Module 1: Name", "completed": false, "xp_reward": 50, "micro_steps": [{"id": 101, "task": "Actionable step", "task_description": "A detailed explanation.", "completed": false}, {"id": 102, "task": "Another step", "task_description": "Another explanation.", "completed": false}]}]} '
+                '{"category": "Study & Exams", "title": "Quest Title", "difficulty": "Hard/Medium/Easy/Epic", "progress": 0, "sub_tasks": [{"id": 1, "task": "Module 1: Name", "completed": false, "xp_reward": 50, "micro_steps": [{"id": 101, "task": "Actionable step", "task_description": "A detailed explanation.", "completed": false}, {"id": 102, "task": "Another step", "task_description": "Another explanation.", "completed": false}]}]} '
                 "ALL text values MUST be strictly in English."
             )
         }
@@ -423,9 +425,9 @@ def api_chat():
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "category": {"type": "string", "description": "Categorize the quest into [Study & Exams, Project & Coding, Habits & Routine, General]."},
+                            "category": {"type": "string", "description": "You MUST categorize the quest EXACTLY into one of these 4 strings: 'Study & Exams', 'Project & Coding', 'Habits & Routine', 'General'. DO NOT create custom categories under any circumstances."},
                             "title": {"type": "string", "description": "The title of the quest."},
-                            "difficulty": {"type": "string", "description": "Difficulty level: Easy, Medium, or Hard."},
+                            "difficulty": {"type": "string", "description": "You MUST evaluate the complexity of the user's goal and assign the difficulty field to exactly one of these strings: 'Easy', 'Medium', 'Hard', or 'Epic'. Do not always default to Medium."},
                             "progress": {"type": "integer", "description": "Initial progress, should always be 0."},
                             "sub_tasks": {
                                 "type": "array",
