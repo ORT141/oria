@@ -4,10 +4,15 @@ import json
 db = SQLAlchemy()
 
 class User(db.Model):
+    # ── Composite index for leaderboard query (W-11) ─────────────────────────
+    __table_args__ = (
+        db.Index('idx_user_level_xp', 'level', 'xp'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     pronouns = db.Column(db.String(200)) # Stored as comma-separated string
     level = db.Column(db.Integer, default=1)
     xp = db.Column(db.Integer, default=0)
@@ -24,6 +29,18 @@ class User(db.Model):
     onboarding_data = db.Column(db.Text, default='{}')
     claimed_rewards = db.Column(db.Text, default='[1]')
     equipped_title = db.Column(db.String(64), default='')
+    telegram_id = db.Column(db.String(64), unique=True, nullable=True)
+    role = db.Column(db.String(20), default='user', nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    prefix = db.Column(db.String(100), nullable=True)  # Legacy, unused
+
+    @property
+    def is_admin(self):
+        return self.role in ('admin', 'superadmin')
+
+    @property
+    def is_superadmin(self):
+        return self.role == 'superadmin'
 
     def __init__(self, username, email, password, pronouns=""):
         self.username = username
@@ -111,3 +128,46 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+
+class TelegramUser(db.Model):
+    """Tracks every Telegram ID that ever interacted with the bot, even if not linked."""
+    id = db.Column(db.Integer, primary_key=True)
+    telegram_id = db.Column(db.String(64), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<TelegramUser {self.telegram_id}>'
+
+
+class ExclusiveTitle(db.Model):
+    """Admin-managed exclusive titles that can be assigned to users."""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, nullable=False)
+    is_system = db.Column(db.Boolean, default=False)  # True = from LEVEL_REWARDS, cannot be deleted
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<ExclusiveTitle {self.name}>'
+
+
+class AdminLog(db.Model):
+    """Audit trail for all admin panel actions."""
+    __table_args__ = (
+        db.Index('idx_adminlog_created', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, nullable=False)       # Who performed the action
+    admin_name = db.Column(db.String(80), nullable=False)
+    action = db.Column(db.String(50), nullable=False)       # e.g. 'force_title', 'modify_coins'
+    target_id = db.Column(db.Integer, nullable=True)        # Target user ID (if applicable)
+    target_name = db.Column(db.String(80), nullable=True)
+    old_value = db.Column(db.String(200), nullable=True)
+    new_value = db.Column(db.String(200), nullable=True)
+    details = db.Column(db.String(300), nullable=True)      # Free text for extra context
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<AdminLog {self.action} by {self.admin_name}>'
+

@@ -1003,3 +1003,46 @@ body {
 .scrollable-quest-list::-webkit-scrollbar-thumb:hover {
     background: var(--accent-pink);
 }
+
+/* --- ORIA Badge System Styles (Glassmorphism) --- */
+.badge-legendary {
+  background: rgba(255, 215, 0, 0.15) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 215, 0, 0.4) !important;
+  color: #ffd700 !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.badge-rare {
+  background: rgba(168, 85, 247, 0.15) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+  color: #a855f7 !important;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+.badge-admin {
+  background: rgba(239, 68, 68, 0.15) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: #ef4444 !important;
+}
+
+.badge-standard {
+  background: rgba(137, 175, 240, 0.1) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--accent-blue) !important;
+}
+
+.badge-initiate {
+  background: var(--primary-gradient) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(137, 175, 240, 0.3);
+}

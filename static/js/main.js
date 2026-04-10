@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
             div.style.borderBottomLeftRadius = '4px';
             div.style.maxWidth = '85%';
             if (window.marked && window.marked.parse) {
-                div.innerHTML = window.marked.parse(text);
+                div.innerHTML = window.DOMPurify.sanitize(window.marked.parse(text));
             } else {
-                div.innerHTML = text.replace(/\n/g, '<br>');
+                div.innerHTML = window.DOMPurify.sanitize(text.replace(/\n/g, '<br>'));
             }
         }
         messagesContainer.appendChild(div);

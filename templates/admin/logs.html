@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Logs — ORIA{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=3">
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('views.home') }}" class="admin-btn admin-btn--outline" style="padding: 6px 14px;">
+                ← Back
+            </a>
+            <h1>⚙️ Admin Panel</h1>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="role-badge role-badge--{{ current_user.role }}">
+                {{ current_user.role }}
+            </span>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                {{ current_user.username }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="admin-tabs">
+        <a href="{{ url_for('admin.dashboard') }}" class="admin-tab {{ 'admin-tab--active' if active_tab == 'users' }}">
+            👥 Users
+        </a>
+        <a href="{{ url_for('admin.logs') }}" class="admin-tab {{ 'admin-tab--active' if active_tab == 'logs' }}">
+            📋 Logs
+        </a>
+    </div>
+
+    <!-- Filter -->
+    <div class="glass-card p-0 overflow-hidden" style="margin-bottom: 1.5rem;">
+        <div style="padding: 14px 20px;">
+            <form method="GET" action="{{ url_for('admin.logs') }}" class="search-filter-row">
+                <select name="action" class="filter-select" style="min-width: 200px;">
+                    <option value="" {{ 'selected' if not action_filter }}>All Actions</option>
+                    {% for a in action_types %}
+                    <option value="{{ a }}" {{ 'selected' if action_filter == a }}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="admin-btn admin-btn--primary">Filter</button>
+                {% if action_filter %}
+                <a href="{{ url_for('admin.logs') }}" class="admin-btn admin-btn--outline">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="glass-card p-0 overflow-hidden" style="margin-bottom: 2rem;">
+        <div class="section-header">
+            <h5>📋 Audit Log <span class="section-count">({{ logs|length }} shown)</span></h5>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Admin</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                        <th>Old Value</th>
+                        <th>New Value</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="cell-date">
+                            {% if log.created_at %}
+                            {{ log.created_at.strftime('%d.%m %H:%M') }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="user-cell-name">{{ log.admin_name }}</span>
+                        </td>
+                        <td>
+                            <span class="log-action-badge log-action--{{ log.action.split('_')[0] }}">
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if log.target_name %}
+                            <span class="user-cell-name">{{ log.target_name }}</span>
+                            <span class="user-cell-email">#{{ log.target_id }}</span>
+                            {% else %}
+                            <span class="text-muted-sm">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="cell-value">{{ log.old_value or '—' }}</td>
+                        <td class="cell-value">{{ log.new_value or '—' }}</td>
+                        <td class="cell-details">{{ log.details or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not logs %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            No log entries yet.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="log-pagination">
+            {% if page > 1 %}
+            <a href="{{ url_for('admin.logs', page=page-1, action=action_filter) }}" class="admin-btn admin-btn--outline admin-btn--sm">← Prev</a>
+            {% endif %}
+            <span class="page-indicator">Page {{ page }} / {{ total_pages }}</span>
+            {% if page < total_pages %}
+            <a href="{{ url_for('admin.logs', page=page+1, action=action_filter) }}" class="admin-btn admin-btn--outline admin-btn--sm">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

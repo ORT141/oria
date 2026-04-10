@@ -31,4 +31,8 @@ instance/
 .DS_Store
 Thumbs.db
 
+# Secrets — NEVER commit these
 config.env
+
+# Logs
+*.log

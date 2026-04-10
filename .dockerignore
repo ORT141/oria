@@ -1,0 +1,31 @@
+# Secrets — NEVER bake into Docker images
+config.env
+.env
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Venvs
+.venv/
+venv/
+
+# Cache
+__pycache__/
+*.py[cod]
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Git
+.git/
+.gitignore

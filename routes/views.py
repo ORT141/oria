@@ -43,3 +43,30 @@ def home():
         return redirect(url_for('auth.register'))
 
     return render_template('homes.html', user=user)
+
+@views_bp.route('/link-telegram')
+def link_telegram():
+    from flask import request, flash
+    tg_id = request.args.get('tg_id')
+    
+    if not tg_id:
+        flash("Invalid Telegram link. Missing ID.", "error")
+        return redirect(url_for('views.index'))
+
+    # If user is logged in, link immediately
+    if 'user_id' in session:
+        user = db.session.get(User, session['user_id'])
+        if user:
+            existing_link = User.query.filter_by(telegram_id=tg_id).first()
+            if existing_link and existing_link.id != user.id:
+                flash("This Telegram account is already linked to another user.", "error")
+            else:
+                user.telegram_id = tg_id
+                db.session.commit()
+                flash("Telegram successfully linked!", "success")
+        return redirect(url_for('views.home'))
+    
+    # Not logged in: store in session and redirect to login
+    session['pending_tg_id'] = tg_id
+    flash("Please log in to link your Telegram account.", "info")
+    return redirect(url_for('auth.login'))

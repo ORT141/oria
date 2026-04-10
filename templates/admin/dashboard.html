@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel — ORIA{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=3">
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('views.home') }}" class="admin-btn admin-btn--outline" style="padding: 6px 14px;">
+                ← Back
+            </a>
+            <h1>⚙️ Admin Panel</h1>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="role-badge role-badge--{{ current_user.role }}">
+                {{ current_user.role }}
+            </span>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                {{ current_user.username }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="admin-tabs">
+        <a href="{{ url_for('admin.dashboard') }}" class="admin-tab {{ 'admin-tab--active' if active_tab == 'users' }}">
+            👥 Users
+        </a>
+        <a href="{{ url_for('admin.logs') }}" class="admin-tab {{ 'admin-tab--active' if active_tab == 'logs' }}">
+            📋 Logs
+        </a>
+    </div>
+
+
+    <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.total_users }}</div>
+            <div class="admin-stat-label">Total Users</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.total_admins }}</div>
+            <div class="admin-stat-label">Admins</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.total_titled }}</div>
+            <div class="admin-stat-label">With Title</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.total_tg_linked }}</div>
+            <div class="admin-stat-label">TG Linked</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.avg_level }}</div>
+            <div class="admin-stat-label">Avg Level</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-value">{{ stats.total_coins }}</div>
+            <div class="admin-stat-label">Total Coins</div>
+        </div>
+    </div>
+
+    <!-- ═══════════ EXCLUSIVE TITLES SECTION ═══════════ -->
+    <div class="glass-card p-0 overflow-hidden" style="margin-bottom: 1.5rem;">
+        <div class="section-header">
+            <h5>
+                🏷️ Exclusive Titles
+                <span class="section-count">({{ titles|length }})</span>
+            </h5>
+        </div>
+        <div style="padding: 16px 20px;">
+            <!-- Existing Titles -->
+            <div class="title-chips-container">
+                {% for t in titles %}
+                <div class="title-chip {{ 'title-chip--system' if t.is_system else 'title-chip--custom' }}">
+                    <span class="title-chip-name">{{ t.name }}</span>
+                    {% if t.is_system %}
+                    <span class="title-chip-tag">SYSTEM</span>
+                    {% else %}
+                    <form action="{{ url_for('admin.delete_title', title_id=t.id) }}" method="POST" style="display: inline; margin: 0;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="title-chip-delete" title="Delete title"
+                                onclick="return confirm('Delete title \'{{ t.name }}\'? It will be removed from all users.')">
+                            ✕
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Create New Title -->
+            <form action="{{ url_for('admin.create_title') }}" method="POST" class="create-title-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="title_name" placeholder="New title name..." maxlength="64" required>
+                <button type="submit" class="admin-btn admin-btn--primary">+ Create Title</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════ SEARCH + FILTERS ═══════════ -->
+    <div class="glass-card p-0 overflow-hidden" style="margin-bottom: 1.5rem;">
+        <div style="padding: 16px 20px;">
+            <form method="GET" action="{{ url_for('admin.dashboard') }}" class="search-filter-row">
+                <div class="search-input-wrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" name="q" value="{{ search_q }}" placeholder="Search by username, email, or ID..." autocomplete="off">
+                </div>
+                <select name="role" class="filter-select">
+                    <option value="" {{ 'selected' if not role_filter }}>All Roles</option>
+                    <option value="user" {{ 'selected' if role_filter == 'user' }}>Users</option>
+                    <option value="admin" {{ 'selected' if role_filter == 'admin' }}>Admins</option>
+                    <option value="superadmin" {{ 'selected' if role_filter == 'superadmin' }}>Superadmins</option>
+                </select>
+                <select name="sort" class="filter-select">
+                    <option value="id" {{ 'selected' if sort_by == 'id' }}>Sort: ID</option>
+                    <option value="username" {{ 'selected' if sort_by == 'username' }}>Sort: Name</option>
+                    <option value="level" {{ 'selected' if sort_by == 'level' }}>Sort: Level</option>
+                    <option value="coins" {{ 'selected' if sort_by == 'coins' }}>Sort: Coins</option>
+                </select>
+                <select name="dir" class="filter-select" style="max-width: 100px;">
+                    <option value="asc" {{ 'selected' if sort_dir == 'asc' }}>↑ Asc</option>
+                    <option value="desc" {{ 'selected' if sort_dir == 'desc' }}>↓ Desc</option>
+                </select>
+                <button type="submit" class="admin-btn admin-btn--primary">Apply</button>
+                {% if search_q or role_filter or sort_by != 'id' %}
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-btn admin-btn--outline">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════ USERS TABLE ═══════════ -->
+    <div class="glass-card p-0 overflow-hidden" style="margin-bottom: 2rem;">
+        <div class="section-header">
+            <h5>
+                👥 Users
+                <span class="section-count">({{ users|length }}{% if search_q or role_filter %} filtered{% endif %})</span>
+            </h5>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Level</th>
+                        <th>XP</th>
+                        <th>Coins</th>
+                        <th>Streak</th>
+                        <th>Title</th>
+                        <th>Role</th>
+                        <th>TG</th>
+                        <th>Registered</th>
+                        <th style="min-width: 280px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr class="{{ 'superadmin-row' if u.is_superadmin else '' }}">
+                        <td class="cell-id">#{{ u.id }}</td>
+                        <td>
+                            <div class="user-cell">
+                                <span class="user-cell-name">{{ u.username }}</span>
+                                <span class="user-cell-email">{{ u.email }}</span>
+                                {% if u.id == current_user.id %}
+                                <span class="user-cell-you">(you)</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="level-badge">Lv.{{ u.level }}</span>
+                        </td>
+                        <td class="cell-number">{{ u.xp }}/100</td>
+                        <td class="cell-number">
+                            <span class="coins-display">⭐ {{ u.coins }}</span>
+                        </td>
+                        <td class="cell-number">
+                            {% if u.current_streak > 0 %}
+                            <span class="streak-display">🔥 {{ u.current_streak }}</span>
+                            {% else %}
+                            <span class="text-muted-sm">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.equipped_title %}
+                            <span class="title-badge">{{ u.equipped_title }}</span>
+                            {% else %}
+                            <span class="text-muted-sm">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="role-badge role-badge--{{ u.role }}">
+                                {% if u.is_superadmin %}👑{% elif u.is_admin %}🛡️{% endif %}
+                                {{ u.role }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if u.telegram_id %}
+                            <span class="tg-linked" title="TG ID: {{ u.telegram_id }}">✓</span>
+                            {% else %}
+                            <span class="text-muted-sm">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="cell-date">
+                            {% if u.created_at %}
+                            {{ u.created_at.strftime('%d.%m.%y') }}
+                            {% else %}
+                            <span class="text-muted-sm">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <!-- Title Equip/Remove -->
+                                <div class="action-group">
+                                    <form action="{{ url_for('admin.force_title', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="title_name" class="action-select">
+                                            <option value="">Title...</option>
+                                            {% for t in titles %}
+                                            <option value="{{ t.name }}" {{ 'selected' if u.equipped_title == t.name else '' }}>{{ t.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="admin-btn admin-btn--primary admin-btn--sm" title="Force equip">⚡</button>
+                                    </form>
+                                    {% if u.equipped_title %}
+                                    <form action="{{ url_for('admin.remove_title', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" title="Remove title">✕ Title</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Stat Modifiers (Level, XP, Coins, Streak) -->
+                                <div class="action-group">
+                                    <form action="{{ url_for('admin.modify_user', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="field" class="action-select action-select--narrow">
+                                            <option value="level">Level</option>
+                                            <option value="xp">XP</option>
+                                            <option value="coins">Coins</option>
+                                            <option value="streak">Streak</option>
+                                        </select>
+                                        <input type="number" name="delta" placeholder="±" class="delta-input" required>
+                                        <button type="submit" class="admin-btn admin-btn--primary admin-btn--sm" title="Apply change">✓</button>
+                                    </form>
+                                </div>
+
+                                <!-- Danger Zone -->
+                                <div class="action-group">
+                                    <form action="{{ url_for('admin.reset_quests', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm"
+                                                onclick="return confirm('Reset all quests for {{ u.username }}?')"
+                                                title="Reset quests">🗑 Quests</button>
+                                    </form>
+                                    <form action="{{ url_for('admin.reset_chat', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm"
+                                                onclick="return confirm('Clear chat history for {{ u.username }}?')"
+                                                title="Clear chat">🗑 Chat</button>
+                                    </form>
+                                </div>
+
+                                <!-- Role Management (superadmin ONLY) -->
+                                {% if current_user.is_superadmin and not u.is_superadmin %}
+                                <div class="action-group">
+                                    <form action="{{ url_for('admin.update_role', user_id=u.id) }}" method="POST" class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="role" class="action-select action-select--narrow">
+                                            <option value="user" {{ 'selected' if u.role == 'user' }}>user</option>
+                                            <option value="admin" {{ 'selected' if u.role == 'admin' }}>admin</option>
+                                        </select>
+                                        <button type="submit" class="admin-btn admin-btn--outline admin-btn--sm" title="Update role">Role</button>
+                                    </form>
+                                </div>
+                                {% elif u.is_superadmin %}
+                                <span class="protected-indicator">🔒 Protected</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

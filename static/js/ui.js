@@ -1123,7 +1123,7 @@ function openModuleView(qIndex, tIndex) {
             explainQuizAPI(qData.question, userAnswerText, correctAnswerText)
                 .then(data => {
                     target.style.display = 'none';
-                    explainBox.innerHTML = `<strong>ORIA:</strong> ${data.explanation}`;
+                    explainBox.innerHTML = window.DOMPurify.sanitize(`<strong>ORIA:</strong> ${data.explanation}`);
                     explainBox.style.display = 'block';
                 })
                 .catch(err => {
@@ -1245,7 +1245,7 @@ function openModuleView(qIndex, tIndex) {
             explainQuizAPI(qData.question, userAnswerText, correctAnswerText)
                 .then(data => {
                     target.style.display = 'none';
-                    explainBox.innerHTML = `<strong>ORIA:</strong> ${data.explanation}`;
+                    explainBox.innerHTML = window.DOMPurify.sanitize(`<strong>ORIA:</strong> ${data.explanation}`);
                     explainBox.style.display = 'block';
                 })
                 .catch(err => {

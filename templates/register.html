@@ -17,6 +17,7 @@
     <h2 class="text-center mb-4 fw-bold">Join ORIA</h2>
 
     <form action="{{ url_for('auth.register') }}" method="post" class="form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="mb-4">
         <label for="field_name" class="form-label">Username</label>
         <input type="text" name="name" id="field_name" placeholder="How should we call you?" class="form-control"

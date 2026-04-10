@@ -12,6 +12,14 @@
                 <option value="uk">UA</option>
                 <option value="en">EN</option>
             </select>
+            {% if user.is_admin %}
+            <a href="{{ url_for('admin.dashboard') }}" id="admin-panel-btn"
+                class="btn btn-sm rounded-pill d-flex align-items-center justify-content-center me-2"
+                style="padding: 4px 12px; font-size: 0.78rem; font-weight: 600; background: var(--primary-gradient); color: white; border: none; text-decoration: none; box-shadow: 0 2px 8px rgba(137,175,240,0.3); transition: all 0.3s;"
+                title="Admin Panel">
+                ⚙️ Admin
+            </a>
+            {% endif %}
             <button id="theme-toggle"
                 class="btn btn-sm btn-outline-secondary me-3 rounded-circle d-flex align-items-center justify-content-center"
                 style="width: 32px; height: 32px; padding: 0; border: none; background: transparent;">

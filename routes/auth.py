@@ -15,7 +15,16 @@ def register():
         password = request.form.get('password')
         pronouns_list = request.form.getlist('pronoun')
         pronouns = ", ".join(pronouns_list)
-        
+
+        # W-04: Password strength validation
+        if not password or len(password) < 8:
+            flash("Password must be at least 8 characters long.", "error")
+            return redirect(url_for('auth.register'))
+
+        if not name or not email:
+            flash("Username and email are required.", "error")
+            return redirect(url_for('auth.register'))
+
         existing_user = User.query.filter(
             (User.username == name) | (User.email == email)
         ).first()
@@ -30,6 +39,18 @@ def register():
 
         session['user_id'] = new_user.id
         session['username'] = new_user.username
+        session.permanent = True
+
+        # Link Telegram if pending
+        pending_tg_id = session.get('pending_tg_id')
+        if pending_tg_id:
+            existing_link = User.query.filter_by(telegram_id=pending_tg_id).first()
+            if not existing_link:
+                new_user.telegram_id = pending_tg_id
+                db.session.commit()
+                flash("Telegram successfully linked!", "success")
+            session.pop('pending_tg_id', None)
+
         return redirect(url_for('views.onboarding'))
 
     return render_template('register.html')
@@ -42,11 +63,25 @@ def login():
     if request.method == 'POST':
         email = request.form.get('e-mail')
         password = request.form.get('password')
-        
+
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
             session['username'] = user.username
+            session.permanent = True
+
+            # Link Telegram if pending
+            pending_tg_id = session.get('pending_tg_id')
+            if pending_tg_id:
+                existing_link = User.query.filter_by(telegram_id=pending_tg_id).first()
+                if not existing_link:
+                    user.telegram_id = pending_tg_id
+                    db.session.commit()
+                    flash("Telegram successfully linked!", "success")
+                else:
+                    flash("Could not link Telegram: ID already in use by another account.", "error")
+                session.pop('pending_tg_id', None)
+
             return redirect(url_for('views.home'))
         else:
             flash("Invalid email or password!", "error")
