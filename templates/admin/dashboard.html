@@ -220,8 +220,8 @@
                                 <div class="action-group">
                                     <form action="{{ url_for('admin.force_title', user_id=u.id) }}" method="POST" class="inline-form">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <select name="title_name" class="action-select">
-                                            <option value="">Title...</option>
+                                        <select name="title_name" class="action-select" required>
+                                            <option value="" disabled {{ 'selected' if not u.equipped_title }}>Title...</option>
                                             {% for t in titles %}
                                             <option value="{{ t.name }}" {{ 'selected' if u.equipped_title == t.name else '' }}>{{ t.name }}</option>
                                             {% endfor %}
