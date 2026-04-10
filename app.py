@@ -104,6 +104,35 @@ app.register_blueprint(admin_bp)
 # ── Exempt JSON API routes from CSRF (they use session-based auth, not forms) ──
 csrf.exempt(api_bp)
 
+
+# ── Telegram Bot (runs in a background thread) ──────────────────────────────
+_bot_started = False
+
+def start_bot_thread():
+    """Start the Telegram bot in a daemon thread if BOT_TOKEN is configured.
+    Safe to call multiple times — only the first call starts the bot."""
+    global _bot_started
+    if _bot_started:
+        return
+    _bot_started = True
+
+    import os
+    token = os.environ.get('BOT_TOKEN', '')
+    if not token:
+        logger.warning("BOT_TOKEN not set — Telegram bot will NOT start")
+        return
+
+    import threading
+    from bot.bot import run_bot
+
+    bot_thread = threading.Thread(target=run_bot, name="oria-bot", daemon=True)
+    bot_thread.start()
+    logger.info("🤖 Telegram bot thread started")
+
+
+# Auto-start bot when module is loaded (works with both `python app.py` and `gunicorn app:app`)
+start_bot_thread()
+
 if __name__ == '__main__':
     # C-04: debug=False for production safety
     app.run(debug=False, port=5001)
