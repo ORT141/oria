@@ -56,6 +56,7 @@ def dashboard():
         'id': User.id, 'username': User.username,
         'level': User.level, 'coins': User.coins,
         'xp': User.xp, 'role': User.role,
+        'created_at': User.created_at,
     }
     sort_col = sort_columns.get(sort_by, User.id)
     query = query.order_by(sort_col.desc() if sort_dir == 'desc' else sort_col.asc())
